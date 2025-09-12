@@ -26,7 +26,7 @@ export default function Lab1() {
           vertical spaces to make the text easier to read. Browsers ignore
           vertical white spaces and render all the text as one single set of
           sentences. To force the browser to add vertical spacing, wrap the
-          paragraphs you want to separate with the paragraph tag{" "}
+          paragraphs you want to separate with the paragraph tag
         </p>
         <p id="wd-p-2">
           This is the first paragraph. The paragraph tag is used to format
@@ -187,7 +187,7 @@ export default function Lab1() {
           />
           <br />
           <label htmlFor="wd-text-fields-first-name">First name:</label>
-          <input type="text" title="John" id="wd-text-fields-first-name" />{" "}
+          <input type="text" title="John" id="wd-text-fields-first-name" />
           <br />
           <label htmlFor="wd-text-fields-last-name">Last name:</label>
           <input
@@ -262,13 +262,11 @@ export default function Lab1() {
           <br />
           <select multiple id="wd-select-many-genre">
             <option value="COMEDY" selected>
-              {" "}
-              Comedy{" "}
+              Comedy
             </option>
-            <option value="DRAMA"> Drama </option>
+            <option value="DRAMA">Drama</option>
             <option value="SCIFI" selected>
-              {" "}
-              Science Fiction{" "}
+              Science Fiction
             </option>
             <option value="FANTASY"> Fantasy </option>
           </select>
@@ -306,8 +304,8 @@ export default function Lab1() {
       Please{" "}
       <a href="https://www.lipsum.com" id="wd-lipsum">
         click here
-      </a>
-      {" "}to get dummy text
+      </a>{" "}
+      to get dummy text
       <br />
       Please{" "}
       <a
@@ -315,8 +313,8 @@ export default function Lab1() {
         id="wd-github"
       >
         click here
-      </a>
-      {" "}to go to github repo
+      </a>{" "}
+      to go to github repo
       <br />
     </div>
   );
