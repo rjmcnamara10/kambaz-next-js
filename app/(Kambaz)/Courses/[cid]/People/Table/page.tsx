@@ -19,6 +19,7 @@ export default function PeopleTable() {
             <td className="wd-full-name text-nowrap">
               <FaUserCircle className="me-2 fs-1 text-secondary" />
               <span className="wd-first-name">Tony</span>
+              {" "}
               <span className="wd-last-name">Stark</span>
             </td>
             <td className="wd-login-id">001234561S</td>
@@ -31,6 +32,7 @@ export default function PeopleTable() {
             <td className="wd-full-name text-nowrap">
               <FaUserCircle className="me-2 fs-1 text-secondary" />
               <span className="wd-first-name">Pragmatic</span>
+              {" "}
               <span className="wd-last-name">Dolphin</span>
             </td>
             <td className="wd-login-id">936778032S</td>
@@ -43,6 +45,7 @@ export default function PeopleTable() {
             <td className="wd-full-name text-nowrap">
               <FaUserCircle className="me-2 fs-1 text-secondary" />
               <span className="wd-first-name">Shameful</span>
+              {" "}
               <span className="wd-last-name">Vulture</span>
             </td>
             <td className="wd-login-id">036552874S</td>
@@ -55,6 +58,7 @@ export default function PeopleTable() {
             <td className="wd-full-name text-nowrap">
               <FaUserCircle className="me-2 fs-1 text-secondary" />
               <span className="wd-first-name">Chocolate</span>
+              {" "}
               <span className="wd-last-name">Lion</span>
             </td>
             <td className="wd-login-id">894682136S</td>
