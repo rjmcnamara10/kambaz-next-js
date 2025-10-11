@@ -1,39 +1,42 @@
+"use client";
+import Link from "next/link";
+import { useParams } from "next/navigation";
+import * as db from "../../../../Database";
 import {
   FormLabel,
   FormControl,
   FormSelect,
   FormCheck,
   Row,
-  Col
+  Col,
+  Button
 } from "react-bootstrap";
 
 export default function AssignmentEditor() {
+  const { cid, aid } = useParams();
+  const assignments = db.assignments;
+  const assignment = assignments.find((assignment) => assignment._id === aid);
+  if (!assignment) {
+    return <div>Assignment not found</div>;
+  }
+
   return (
     <div id="wd-assignments-editor" className="d-flex flex-column gap-3">
       <div>
         <FormLabel>Assignment Name</FormLabel>
-        <FormControl defaultValue="A1" />
+        <FormControl defaultValue={assignment.title} />
       </div>
       <FormControl
         as="textarea"
         rows={10}
-        defaultValue={`The assignment is available online
-
-Submit a link to the landing page of your Web application running on Netlify.
-
-The landing page should include the following:
-- A list of links to navigate to each of the lab assignments
-- Link to the Kanbas application
-- Links to all relevant source code repositories
-
-The Kanbas application should include a link to navigate back to the landing page.`}
+        defaultValue={assignment.description}
       />
       <Row className="mb-3" controlId="points">
         <FormLabel column sm={2}>
           Points
         </FormLabel>
         <Col sm={10}>
-          <FormControl type="number" defaultValue="100" />
+          <FormControl type="number" defaultValue={assignment.points} />
         </Col>
       </Row>
       <Row className="mb-3" controlId="assignment-group">
@@ -115,20 +118,48 @@ The Kanbas application should include a link to navigate back to the landing pag
           </div>
           <div>
             <FormLabel>Due</FormLabel>
-            <FormControl type="date" defaultValue="2024-05-13" />
+            <FormControl type="datetime-local" defaultValue={assignment.due_date?.slice(0, 16)} />
           </div>
           <Row>
             <Col sm={6}>
               <FormLabel>Available from</FormLabel>
-              <FormControl type="date" defaultValue="2024-05-06" />
+              <FormControl type="datetime-local" defaultValue={assignment.available_date?.slice(0, 16)} />
             </Col>
             <Col sm={6}>
               <FormLabel>Until</FormLabel>
-              <FormControl type="date" defaultValue="2024-05-20" />
+              <FormControl type="datetime-local" />
             </Col>
           </Row>
         </Col>
       </Row>
+      <div className="d-flex gap-2 justify-content-end">
+        <Link
+          href={`/Courses/${cid}/Assignments`}
+          id="wd-cancel-link"
+        >
+          <Button
+            variant="secondary"
+            size="lg"
+            className="me-1 float-end"
+            id="wd-cancel-btn"
+          >
+            Cancel
+          </Button>
+        </Link>
+        <Link
+          href={`/Courses/${cid}/Assignments`}
+          id="wd-save-link"
+        >
+          <Button
+            variant="danger"
+            size="lg"
+            className="me-1 float-end"
+            id="wd-save-btn"
+          >
+            Save
+          </Button>
+        </Link>
+      </div>
     </div>
   );
 }

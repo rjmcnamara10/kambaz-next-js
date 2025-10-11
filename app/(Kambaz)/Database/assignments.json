@@ -1,0 +1,191 @@
+[
+  {
+    "_id": "A101",
+    "title": "Component Creation and JSX Practice",
+    "course": "1",
+    "available_date": "2025-09-03T00:00:00Z",
+    "due_date": "2025-09-12T23:59:00Z",
+    "points": 50,
+    "description": "Create several React components using JSX and demonstrate their use in a simple application. Focus on component structure, props, and rendering."
+  },
+  {
+    "_id": "A102",
+    "title": "State Management and Hooks Assignment",
+    "course": "1",
+    "available_date": "2025-09-15T00:00:00Z",
+    "due_date": "2025-09-28T23:59:00Z",
+    "points": 150,
+    "description": "Implement state management in a React app using useState and useEffect hooks. Explain the flow of data and component reactivity."
+  },
+  {
+    "_id": "A103",
+    "title": "Deploying a React Application Project",
+    "course": "1",
+    "available_date": "2025-10-01T00:00:00Z",
+    "due_date": "2025-10-20T23:59:00Z",
+    "points": 300,
+    "description": "Build a complete React application and deploy it to a cloud platform. Include a README with deployment steps and a demo link."
+  },
+  {
+    "_id": "A201",
+    "title": "Stealth Movement Skills Assessment",
+    "course": "2",
+    "available_date": "2025-09-05T00:00:00Z",
+    "due_date": "2025-09-18T23:59:00Z",
+    "points": 75,
+    "description": "Demonstrate your ability to move silently and unseen through a series of obstacles. Assessment will be based on agility and stealth."
+  },
+  {
+    "_id": "A202",
+    "title": "Ninja Tools and Weapons Quiz",
+    "course": "2",
+    "available_date": "2025-09-22T00:00:00Z",
+    "due_date": "2025-09-29T23:59:00Z",
+    "points": 25,
+    "description": "Quiz on the identification, safe handling, and strategic use of traditional ninja tools and weapons."
+  },
+  {
+    "_id": "A203",
+    "title": "Ninja Techniques Demonstration",
+    "course": "2",
+    "available_date": "2025-10-05T00:00:00Z",
+    "due_date": "2025-10-25T23:59:00Z",
+    "points": 200,
+    "description": "Perform a live demonstration of advanced ninja techniques, including acrobatics and weapon skills."
+  },
+  {
+    "_id": "A301",
+    "title": "Argumentation and Logic Written Assignment",
+    "course": "3",
+    "available_date": "2025-09-10T00:00:00Z",
+    "due_date": "2025-09-20T23:59:00Z",
+    "points": 40,
+    "description": "Write an essay analyzing the structure of arguments and logical fallacies in debate. Provide real-world examples."
+  },
+  {
+    "_id": "A302",
+    "title": "Bowl Debate Strategies Quiz",
+    "course": "3",
+    "available_date": "2025-09-25T00:00:00Z",
+    "due_date": "2025-10-01T23:59:00Z",
+    "points": 20,
+    "description": "Quiz on effective strategies and techniques unique to bowl debate competitions."
+  },
+  {
+    "_id": "A303",
+    "title": "Endurance Debate",
+    "course": "3",
+    "available_date": "2025-10-10T00:00:00Z",
+    "due_date": "2025-11-01T23:59:00Z",
+    "points": 500,
+    "description": "Participate in a multi-day bowl debate competition. Grading based on stamina, argument quality, and teamwork."
+  },
+  {
+    "_id": "A401",
+    "title": "Coral Reef Ecosystem Research Report",
+    "course": "4",
+    "available_date": "2025-09-07T00:00:00Z",
+    "due_date": "2025-09-21T23:59:00Z",
+    "points": 60,
+    "description": "Write a research report on the structure and importance of coral reef ecosystems. Include diagrams and references."
+  },
+  {
+    "_id": "A402",
+    "title": "Excavation Techniques Practical Quiz",
+    "course": "4",
+    "available_date": "2025-09-25T00:00:00Z",
+    "due_date": "2025-10-02T23:59:00Z",
+    "points": 15,
+    "description": "Quiz on safe and effective coral reef excavation methods, including equipment and safety protocols."
+  },
+  {
+    "_id": "A403",
+    "title": "Industry Skills Final Exam",
+    "course": "4",
+    "available_date": "2025-10-15T00:00:00Z",
+    "due_date": "2025-11-10T23:59:00Z",
+    "points": 120,
+    "description": "Comprehensive exam covering all skills and knowledge required for a career in coral reef excavation."
+  },
+  {
+    "_id": "A501",
+    "title": "Whisking Techniques Lab",
+    "course": "5",
+    "available_date": "2025-09-12T00:00:00Z",
+    "due_date": "2025-09-19T23:59:00Z",
+    "points": 30,
+    "description": "Hands-on lab to practice basic and advanced whisking techniques. Submit a video demonstration."
+  },
+  {
+    "_id": "A502",
+    "title": "Advanced Whisking Methods Task",
+    "course": "5",
+    "available_date": "2025-09-22T00:00:00Z",
+    "due_date": "2025-10-03T23:59:00Z",
+    "points": 80,
+    "description": "Complete a set of advanced whisking challenges, including the Bulgarian and alternate hand whisk."
+  },
+  {
+    "_id": "A503",
+    "title": "Culinary Discipline Essay",
+    "course": "5",
+    "available_date": "2025-10-10T00:00:00Z",
+    "due_date": "2025-10-30T23:59:00Z",
+    "points": 200,
+    "description": "Write an essay on the importance of discipline and etiquette in a professional kitchen."
+  },
+  {
+    "_id": "A601",
+    "title": "Nerd History and Culture Project",
+    "course": "6",
+    "available_date": "2025-09-08T00:00:00Z",
+    "due_date": "2025-09-22T23:59:00Z",
+    "points": 100,
+    "description": "Research and present on a significant event or figure in nerd history and its cultural impact."
+  },
+  {
+    "_id": "A602",
+    "title": "Advanced Geekery Analysis",
+    "course": "6",
+    "available_date": "2025-09-29T00:00:00Z",
+    "due_date": "2025-10-10T23:59:00Z",
+    "points": 60,
+    "description": "Analyze a complex topic in science, math, or pop culture and present your findings in a creative format."
+  },
+  {
+    "_id": "A603",
+    "title": "Nerd Olympics: Team Challenge",
+    "course": "6",
+    "available_date": "2025-10-20T00:00:00Z",
+    "due_date": "2025-11-15T23:59:00Z",
+    "points": 300,
+    "description": "Compete in a series of nerd-themed team challenges. Points awarded for creativity, teamwork, and knowledge."
+  },
+  {
+    "_id": "A701",
+    "title": "Introduction to Hyperbolic Spaces Assignment",
+    "course": "7",
+    "available_date": "2025-09-05T00:00:00Z",
+    "due_date": "2025-09-15T23:59:00Z",
+    "points": 10,
+    "description": "Complete exercises introducing the concepts of hyperbolic geometry and its applications."
+  },
+  {
+    "_id": "A702",
+    "title": "Knitting in Higher Dimensions Quiz",
+    "course": "7",
+    "available_date": "2025-09-20T00:00:00Z",
+    "due_date": "2025-09-27T23:59:00Z",
+    "points": 25,
+    "description": "Quiz on techniques and theory behind knitting in non-Euclidean and higher-dimensional spaces."
+  },
+  {
+    "_id": "A703",
+    "title": "Existential Knitting Exam",
+    "course": "7",
+    "available_date": "2025-11-01T00:00:00Z",
+    "due_date": "2025-12-10T23:59:00Z",
+    "points": 400,
+    "description": "Final exam covering the philosophical and practical aspects of hyperbolic knitting."
+  }
+]

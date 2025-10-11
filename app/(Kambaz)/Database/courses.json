@@ -3,10 +3,70 @@
     "_id": "1",
     "name": "React JS",
     "number": "CS1234",
-    "startDate": "2023-01-10",
-    "endDate": "2023-05-15",
+    "startDate": "2025-09-01",
+    "endDate": "2025-12-15",
     "department": "D123",
     "credits": 4,
-    "description": ""
+    "description": "This course provides a comprehensive introduction to React JS, a leading JavaScript library for building dynamic user interfaces. Students will explore the fundamentals of component-based architecture, state management, hooks, and the virtual DOM. The course emphasizes both theoretical concepts and hands-on development, guiding students through the creation of interactive web applications. By the end of the course, students will have gained practical experience in designing, building, and deploying modern web applications using React JS."
+  },
+  {
+    "_id": "2",
+    "name": "Ninja-ing",
+    "number": "DA3061",
+    "startDate": "2025-09-01",
+    "endDate": "2025-12-15",
+    "department": "D123",
+    "credits": 4,
+    "description": "This course offers a hands on curriculum for that ninja stuff. You will learn how to be a ninja and do ninja things. I cannot stress enough how crazy and cool this class is. We will do flying kicks, front flips, sneaking around, and of course, throwing stars. The class will take place in a dojo and you will be expected to wear a gi. If you do not have one, don't even think about enrolling."
+  },
+  {
+    "_id": "3",
+    "name": "Bowl Debate",
+    "number": "ME1445",
+    "startDate": "2025-09-01",
+    "endDate": "2025-12-15",
+    "department": "D134",
+    "credits": 3,
+    "description": "This course is designed to teach students advanced argumentation and public speaking skills through fierce bowl debate competitions. Competitions will last 48-84 hours and will ironically be held in a large bowl. Past debated topics include: are those cereal bowls with straws attached the greatest invention of all time? and what circumference does a bread roll need to be considered a bread bowl? Students should expect to lose 10-35 pounds by the end of the course due to the intensity of the debates and lack of food offered."
+  },
+  {
+    "_id": "4",
+    "name": "Coral Reef Excavation",
+    "number": "DS9000",
+    "startDate": "2025-09-01",
+    "endDate": "2025-12-15",
+    "department": "D123",
+    "credits": 1,
+    "description": "Did you like construction toys as a kid? Do you like sand? Do you have a coral reef excavation license and no criminal record in the state of Washington? Then this is the class for you! In this course, students will learn the ins and outs of coral reef excavation. Students will help sea master Carl rise the ranks of the coral reef excavation industry and win back his former apprentice, Bartholomew le Crab. Students are recommended to bring a hard hat, lunch, and a positive attitude! Oh and band aids. Lots of band aids."
+  },
+  {
+    "_id": "5",
+    "name": "Whisking",
+    "number": "ACCT6083",
+    "startDate": "2025-09-01",
+    "endDate": "2025-12-15",
+    "department": "Accounting",
+    "credits": 4,
+    "description": "Perfect the technique of whisking in this hands-on culinary course. Students will learn various whisking methods, including the Bulgarian whisk, alternate hand whisk, and flat-toed whisk. Chef Todd will not tolerate tomfoolery or incompetence in his kitchen. Students will learn to obey his commands and respect his mastery of whisking. There will be an egg white party for 7 minutes on the final day of class."
+  },
+  {
+    "_id": "6",
+    "name": "Nerd Class",
+    "number": "MATH4800",
+    "startDate": "2025-09-01",
+    "endDate": "2025-12-15",
+    "department": "D125",
+    "credits": 4,
+    "description": "A class for nerds. Total geeks. Absolute dweebs. Super dorks. The most prestigious and elite class offered at Northeastern University. Upon completion, students will be awarded a 15 foot tall, solid gold trophy and $12 cash."
+  },
+  {
+    "_id": "7",
+    "name": "Hyperbolic Knitting",
+    "number": "PHL1001",
+    "startDate": "2025-09-01",
+    "endDate": "2025-12-15",
+    "department": "Philosophy",
+    "credits": 4,
+    "description": "I couldn't even describe it if I wanted to. I went to go ask the professor what this class was about but I was transported to another dimension after entering their office. I remember complete darkness, a loud and terrifying screeching noise, and then a blinding light. Next thing I knew, a booming voice called down to me, 'You should not be here.' I woke up sweating profusely in Fair Grove, Missouri. I would strongly discourage enrolling in this class."
   }
 ]

@@ -1,0 +1,188 @@
+[
+  {
+    "_id": "M101",
+    "name": "Foundations of Ninja-ing",
+    "description": "An introduction to the history and essentials of ninja-ing.",
+    "course": "2",
+    "lessons": [
+      {
+        "_id": "L101",
+        "name": "History of Ninja-ing",
+        "description": "A brief history of ninja-ing and its cultural significance.",
+        "module": "M101"
+      },
+      {
+        "_id": "L102",
+        "name": "Stances and Movements",
+        "description": "Introduction to basic stances and movements in ninja-ing.",
+        "module": "M101"
+      },
+      {
+        "_id": "L103",
+        "name": "Stealth and Discipline",
+        "description": "Overview of stealth techniques and the discipline of ninja-ing.",
+        "module": "M101"
+      }
+    ]
+  },
+  {
+    "_id": "M102",
+    "name": "Physical Techniques and Acrobatics",
+    "description": "This module focuses on developing agility, strength, and coordination through rigorous physical training.",
+    "course": "2",
+    "lessons": [
+      {
+        "_id": "L201",
+        "name": "Silent Movement",
+        "description": "Techniques for moving silently and avoiding detection.",
+        "module": "M102"
+      },
+      {
+        "_id": "L202",
+        "name": "Basic Acrobatics",
+        "description": "Overview of basic acrobatic techniques and movements.",
+        "module": "M102"
+      },
+      {
+        "_id": "L203",
+        "name": "Advanced Acrobatics",
+        "description": "Understanding advanced acrobatic techniques including flips and aerial maneuvers.",
+        "module": "M102"
+      }
+    ]
+  },
+  {
+    "_id": "M103",
+    "name": "Tools, Weapons, and Strategy",
+    "description": "Principles of tools, weapons, and strategic planning in ninja-ing.",
+    "course": "2",
+    "lessons": [
+      {
+        "_id": "L301",
+        "name": "Safety",
+        "description": "Understanding safety protocols when handling ninja tools and weapons.",
+        "module": "M103"
+      },
+      {
+        "_id": "L302",
+        "name": "Throwing Stars",
+        "description": "Techniques for effectively using throwing stars in various scenarios.",
+        "module": "M103"
+      },
+      {
+        "_id": "L303",
+        "name": "Staff and Sword Techniques",
+        "description": "Overview of staff and sword techniques in ninja-ing.",
+        "module": "M103"
+      }
+    ]
+  },
+  {
+    "_id": "M201",
+    "name": "React Fundamentals",
+    "description": "Introduction to React concepts, JSX, and component-based architecture.",
+    "course": "1"
+  },
+  {
+    "_id": "M202",
+    "name": "State Management and Hooks",
+    "description": "Exploring state, props, and the use of React hooks for dynamic applications.",
+    "course": "1"
+  },
+  {
+    "_id": "M203",
+    "name": "Building and Deploying Applications",
+    "description": "Hands-on module for building, testing, and deploying React applications.",
+    "course": "1"
+  },
+  {
+    "_id": "M301",
+    "name": "Debate Fundamentals",
+    "description": "Core principles of argumentation, logic, and public speaking.",
+    "course": "3"
+  },
+  {
+    "_id": "M302",
+    "name": "Bowl Debate Strategies",
+    "description": "Techniques and strategies unique to bowl debate competitions.",
+    "course": "3"
+  },
+  {
+    "_id": "M303",
+    "name": "Endurance and Ethics",
+    "description": "Managing long debates, ethical considerations, and maintaining composure.",
+    "course": "3"
+  },
+  {
+    "_id": "M401",
+    "name": "Introduction to Coral Reefs",
+    "description": "Overview of coral reef ecosystems and their importance.",
+    "course": "4"
+  },
+  {
+    "_id": "M402",
+    "name": "Excavation Techniques",
+    "description": "Safe and effective methods for coral reef excavation.",
+    "course": "4"
+  },
+  {
+    "_id": "M403",
+    "name": "Industry and Career Skills",
+    "description": "Professional skills and career pathways in coral reef excavation.",
+    "course": "4"
+  },
+  {
+    "_id": "M501",
+    "name": "Whisking Basics",
+    "description": "Fundamental whisking techniques and kitchen safety.",
+    "course": "5"
+  },
+  {
+    "_id": "M502",
+    "name": "Advanced Whisking Methods",
+    "description": "Mastering specialized whisking styles and recipes.",
+    "course": "5"
+  },
+  {
+    "_id": "M503",
+    "name": "Culinary Discipline",
+    "description": "Kitchen etiquette, discipline, and working under pressure.",
+    "course": "5"
+  },
+  {
+    "_id": "M601",
+    "name": "Nerd History and Culture",
+    "description": "Exploring the history, culture, and impact of nerds in society.",
+    "course": "6"
+  },
+  {
+    "_id": "M602",
+    "name": "Advanced Geekery",
+    "description": "Deep dives into topics beloved by nerds: math, science, and pop culture.",
+    "course": "6"
+  },
+  {
+    "_id": "M603",
+    "name": "Dweeb Studies",
+    "description": "An exploration of the social dynamics and cultural significance of 'dweeb' identity.",
+    "course": "6"
+  },
+  {
+    "_id": "M701",
+    "name": "Introduction to Hyperbolic Spaces",
+    "description": "Understanding the mathematics and philosophy of hyperbolic geometry.",
+    "course": "7"
+  },
+  {
+    "_id": "M702",
+    "name": "Knitting in Higher Dimensions",
+    "description": "Techniques for knitting objects that defy traditional geometry.",
+    "course": "7"
+  },
+  {
+    "_id": "M703",
+    "name": "Existential Knitting",
+    "description": "Philosophical implications and personal experiences of hyperbolic knitting.",
+    "course": "7"
+  }
+]
