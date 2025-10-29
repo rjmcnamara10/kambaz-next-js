@@ -2,8 +2,12 @@ import { Button, InputGroup, FormControl } from "react-bootstrap";
 import InputGroupText from "react-bootstrap/esm/InputGroupText";
 import { FaPlus } from "react-icons/fa6";
 import { FaSearch } from "react-icons/fa";
+import { useParams } from "next/navigation";
+import { redirect } from "next/dist/client/components/navigation";
 
 export default function AssignmentsControls() {
+  const { cid } = useParams();
+
   return (
     <div
       id="wd-assignments-controls"
@@ -22,7 +26,10 @@ export default function AssignmentsControls() {
           className="me-1"
           id="wd-add-group-btn"
         >
-          <FaPlus className="position-relative me-2" style={{ bottom: "1px" }} />
+          <FaPlus
+            className="position-relative me-2"
+            style={{ bottom: "1px" }}
+          />
           Group
         </Button>
         <Button
@@ -30,8 +37,14 @@ export default function AssignmentsControls() {
           size="lg"
           className="me-1"
           id="wd-add-assignment-btn"
+          onClick={() => {
+            redirect(`/Courses/${cid}/Assignments/new`);
+          }}
         >
-          <FaPlus className="position-relative me-2" style={{ bottom: "1px" }} />
+          <FaPlus
+            className="position-relative me-2"
+            style={{ bottom: "1px" }}
+          />
           Assignment
         </Button>
       </div>

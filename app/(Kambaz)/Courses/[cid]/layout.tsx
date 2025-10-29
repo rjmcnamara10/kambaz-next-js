@@ -1,5 +1,3 @@
-/* eslint-disable react-hooks/rules-of-hooks */
-/* eslint-disable @next/next/no-async-client-component */
 /* eslint-disable @typescript-eslint/no-explicit-any */
 "use client";
 import { ReactNode, useState } from "react";
@@ -9,12 +7,11 @@ import { useSelector } from "react-redux";
 import { useParams } from "next/navigation";
 import Breadcrumb from "./Breadcrumb";
 
-export default async function CoursesLayout({
-  children,
-}: {
-  children: ReactNode;
-}) {
+export default function CoursesLayout({
+  children
+}: Readonly<{ children: ReactNode; }>) {
   const { cid } = useParams();
+  // const { cid } = await params;
   const { courses } = useSelector((state: any) => state.coursesReducer);
   const course = courses.find((course: any) => course._id === cid);
 
@@ -34,7 +31,7 @@ export default async function CoursesLayout({
       <div className="d-flex">
         {showCourseNav && (
           <div className="d-none d-md-block">
-            <CourseNavigation cid={"1"} />
+            <CourseNavigation cid={cid as string} />
           </div>
         )}
         <div className="flex-fill">{children}</div>

@@ -45,7 +45,7 @@ export default function KambazNavigation() {
       </ListGroupItem>
       {links.map((link) => (
         <ListGroupItem
-          key={link.path}
+          key={link.label}
           as={Link}
           href={link.path}
           className={`bg-black text-center border-0 ${pathname.includes(link.label) ? "text-danger bg-white" : "text-white bg-black"}`}

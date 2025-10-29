@@ -7,11 +7,14 @@ import AssignmentControlButtons from "./AssignmentControlButtons";
 import { ListGroup, ListGroupItem } from "react-bootstrap";
 import { BsGripVertical } from "react-icons/bs";
 import { useParams } from "next/navigation";
-import * as db from "../../../Database";
+import { deleteAssignment } from "./reducer";
+import { useSelector, useDispatch } from "react-redux";
 
 export default function Assignments() {
   const { cid } = useParams();
-  const assignments = db.assignments;
+  const { assignments } = useSelector((state: any) => state.assignmentsReducer);
+  const { currentUser } = useSelector((state: any) => state.accountReducer);
+  const dispatch = useDispatch();
 
   return (
     <div id="wd-assignments">
@@ -36,27 +39,56 @@ export default function Assignments() {
                   <div className="d-flex align-items-center">
                     <BsGripVertical className="me-2 fs-3" />
                     <div className="wd-assignment-info">
-                      <Link
-                        href={`/Courses/${cid}/Assignments/${assignment._id}`}
-                        className="wd-assignment-link text-black text-decoration-none fw-bold"
-                      >
-                        {assignment.title}
-                      </Link>
+                      {currentUser?.role === "FACULTY" ? (
+                        <Link
+                          href={`/Courses/${cid}/Assignments/${assignment._id}`}
+                          className="wd-assignment-link text-black text-decoration-none fw-bold"
+                        >
+                          {assignment.title}
+                        </Link>
+                      ) : (
+                        <span className="text-black fw-bold">
+                          {assignment.title}
+                        </span>
+                      )}
                       <p className="mb-0">
                         <span className="text-danger">Multiple Modules</span> |{" "}
                         <b>Not available until</b>{" "}
-                        {new Date(assignment.available_date).toLocaleString('default', { month: 'long', timeZone: 'UTC' })}{" "}
-                        {new Date(assignment.available_date).getUTCDate()} at{" "}
-                        {new Date(assignment.available_date).toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit', hour12: true, timeZone: 'UTC' }).toLowerCase()}{" "}
+                        {new Date(assignment.available_date).toLocaleString(
+                          "default",
+                          { month: "long" }
+                        )}{" "}
+                        {new Date(assignment.available_date).getDate()} at{" "}
+                        {new Date(assignment.available_date)
+                          .toLocaleTimeString("en-US", {
+                            hour: "numeric",
+                            minute: "2-digit",
+                            hour12: true,
+                          })
+                          .toLowerCase()}{" "}
                         | <b>Due</b>{" "}
-                        {new Date(assignment.due_date).toLocaleString('default', { month: 'long', timeZone: 'UTC' })}{" "}
-                        {new Date(assignment.due_date).getUTCDate()} at{" "}
-                        {new Date(assignment.due_date).toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit', hour12: true, timeZone: 'UTC' }).toLowerCase()}{" "}
+                        {new Date(assignment.due_date).toLocaleString(
+                          "default",
+                          { month: "long" }
+                        )}{" "}
+                        {new Date(assignment.due_date).getDate()} at{" "}
+                        {new Date(assignment.due_date)
+                          .toLocaleTimeString("en-US", {
+                            hour: "numeric",
+                            minute: "2-digit",
+                            hour12: true,
+                          })
+                          .toLowerCase()}{" "}
                         | {assignment.points} pts
                       </p>
                     </div>
                   </div>
-                  <AssignmentControlButtons />
+                  <AssignmentControlButtons
+                    assignmentId={assignment._id}
+                    deleteAssignment={(assignmentId) => {
+                      dispatch(deleteAssignment(assignmentId));
+                    }}
+                  />
                 </ListGroupItem>
               ))}
           </ListGroup>
