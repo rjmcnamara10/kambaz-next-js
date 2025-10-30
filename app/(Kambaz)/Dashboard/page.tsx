@@ -32,6 +32,10 @@ export default function Dashboard() {
     description: "New Description",
   });
 
+  if (!currentUser) {
+    return <div>Loading...</div>;
+  }
+
   return (
     <div id="wd-dashboard">
       <h1 id="wd-dashboard-title">Dashboard</h1> <hr />
