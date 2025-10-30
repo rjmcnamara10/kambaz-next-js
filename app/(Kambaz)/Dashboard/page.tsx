@@ -15,7 +15,7 @@ import {
 import { FormControl } from "react-bootstrap";
 import { useDispatch, useSelector } from "react-redux";
 import { addNewCourse, deleteCourse, updateCourse } from "../Courses/reducer";
-// import { addEnrollment, deleteEnrollment } from "./Enrollments/reducer";
+import { addEnrollment, deleteEnrollment } from "./Enrollments/reducer";
 
 export default function Dashboard() {
   const { currentUser } = useSelector((state: any) => state.accountReducer);
@@ -42,7 +42,14 @@ export default function Dashboard() {
   }
   const isFaculty = currentUser?.role === "FACULTY";
   const visibleCourses = showAllEnrollments
-    ? courses
+    ? courses.map((course: any) => {
+        const enrollment = enrollments.find(
+          (e: any) => e.user === currentUser._id && e.course === course._id
+        );
+        return enrollment
+          ? { ...course, enrollment_id: enrollment._id }
+          : course;
+      })
     : courses.filter((course: any) =>
         enrollments.some(
           (enrollment: any) =>
@@ -131,27 +138,62 @@ export default function Dashboard() {
                     >
                       {course.description}
                     </CardText>
-                    <Button variant="primary"> Go </Button>
-                    <button
-                      onClick={(event) => {
-                        event.preventDefault();
-                        dispatch(deleteCourse(course._id));
-                      }}
-                      className="btn btn-danger float-end"
-                      id="wd-delete-course-click"
-                    >
-                      Delete
-                    </button>
-                    <button
-                      id="wd-edit-course-click"
-                      onClick={(event) => {
-                        event.preventDefault();
-                        setCourse(course);
-                      }}
-                      className="btn btn-warning me-2 float-end"
-                    >
-                      Edit
-                    </button>
+                    <Button variant="primary" className="btn-sm">
+                      Go
+                    </Button>
+                    {isFaculty && (
+                      <>
+                        <button
+                          onClick={(event) => {
+                            event.preventDefault();
+                            dispatch(deleteCourse(course._id));
+                          }}
+                          className="btn btn-danger float-end btn-sm"
+                          id="wd-delete-course-click"
+                        >
+                          Delete
+                        </button>
+                        <button
+                          id="wd-edit-course-click"
+                          onClick={(event) => {
+                            event.preventDefault();
+                            setCourse(course);
+                          }}
+                          className="btn btn-warning me-2 float-end btn-sm"
+                        >
+                          Edit
+                        </button>
+                      </>
+                    )}
+                    {showAllEnrollments &&
+                      (course.enrollment_id ? (
+                        <button
+                          onClick={(event) => {
+                            event.preventDefault();
+                            dispatch(deleteEnrollment(course.enrollment_id));
+                          }}
+                          className="btn btn-danger ms-2 btn-sm"
+                          id="wd-unenroll-click"
+                        >
+                          Unenroll
+                        </button>
+                      ) : (
+                        <button
+                          onClick={(event) => {
+                            event.preventDefault();
+                            dispatch(
+                              addEnrollment({
+                                user: currentUser._id,
+                                course: course._id,
+                              })
+                            );
+                          }}
+                          className="btn btn-success ms-2 btn-sm"
+                          id="wd-enroll-click"
+                        >
+                          Enroll
+                        </button>
+                      ))}
                   </CardBody>
                 </Link>
               </Card>

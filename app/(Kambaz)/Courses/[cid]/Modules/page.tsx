@@ -14,7 +14,10 @@ export default function Modules() {
   const { cid } = useParams();
   const [moduleName, setModuleName] = useState("");
   const { modules } = useSelector((state: any) => state.modulesReducer);
+  const { currentUser } = useSelector((state: any) => state.accountReducer);
   const dispatch = useDispatch();
+
+  const isFaculty = currentUser?.role === "FACULTY";
 
   return (
     <div>
@@ -25,6 +28,7 @@ export default function Modules() {
           dispatch(addModule({ name: moduleName, course: cid }));
           setModuleName("");
         }}
+        isFaculty={isFaculty}
       />
       <br />
       <br />
@@ -63,6 +67,7 @@ export default function Modules() {
                     dispatch(deleteModule(moduleId));
                   }}
                   editModule={(moduleId) => dispatch(editModule(moduleId))}
+                  isFaculty={isFaculty}
                 />
               </div>
               {module.lessons && (
