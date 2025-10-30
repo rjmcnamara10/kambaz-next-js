@@ -7,9 +7,11 @@ import { Modal, Button } from "react-bootstrap";
 export default function AssignmentControlButtons({
   assignmentId,
   deleteAssignment,
+  isFaculty,
 }: {
   assignmentId: string;
   deleteAssignment: (assignmentId: string) => void;
+  isFaculty: boolean;
 }) {
   const [showConfirm, setShowConfirm] = useState(false);
   const openConfirm = () => setShowConfirm(true);
@@ -25,11 +27,13 @@ export default function AssignmentControlButtons({
       <div className="float-end text-nowrap">
         <GreenCheckmark />
         <IoEllipsisVertical className="fs-4" />
-        <FaTrash
-          className="text-danger me-2 mb-1"
-          cursor={"pointer"}
-          onClick={openConfirm}
-        />
+        {isFaculty && (
+          <FaTrash
+            className="text-danger me-2 mb-1"
+            cursor={"pointer"}
+            onClick={openConfirm}
+          />
+        )}
       </div>
       <Modal show={showConfirm} onHide={closeConfirm}>
         <Modal.Header closeButton>

@@ -18,6 +18,7 @@ import {
 export default function AssignmentEditor() {
   const { cid, aid } = useParams();
   const { assignments } = useSelector((state: any) => state.assignmentsReducer);
+  const { currentUser } = useSelector((state: any) => state.accountReducer);
   const dispatch = useDispatch();
 
   const isNew = aid === "new";
@@ -52,6 +53,9 @@ export default function AssignmentEditor() {
     }
   }, [isNew, existing]);
 
+  if (!currentUser?.role || currentUser.role !== "FACULTY") {
+    return <div>You are not authorized to view this page</div>;
+  }
   if (!isNew && !existing) {
     return <div>Assignment not found</div>;
   }

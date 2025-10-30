@@ -14,11 +14,14 @@ export default function Assignments() {
   const { cid } = useParams();
   const { assignments } = useSelector((state: any) => state.assignmentsReducer);
   const { currentUser } = useSelector((state: any) => state.accountReducer);
+  const isFaculty = currentUser?.role === "FACULTY";
   const dispatch = useDispatch();
 
   return (
     <div id="wd-assignments">
-      <AssignmentsControls />
+      {isFaculty && (
+        <AssignmentsControls />
+      )}
       <br />
       <br />
       <ListGroup className="rounded-0" id="wd-groups">
@@ -88,6 +91,7 @@ export default function Assignments() {
                     deleteAssignment={(assignmentId) => {
                       dispatch(deleteAssignment(assignmentId));
                     }}
+                    isFaculty={isFaculty}
                   />
                 </ListGroupItem>
               ))}
