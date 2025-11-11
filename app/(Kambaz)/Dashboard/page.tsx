@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 "use client";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Link from "next/link";
 import {
   Row,
@@ -14,13 +14,18 @@ import {
 } from "react-bootstrap";
 import { FormControl } from "react-bootstrap";
 import { useDispatch, useSelector } from "react-redux";
-import { addNewCourse, deleteCourse, updateCourse } from "../Courses/reducer";
+import {
+  addNewCourse,
+  deleteCourse,
+  updateCourse,
+  setCourses,
+} from "../Courses/reducer";
 import { addEnrollment, deleteEnrollment } from "./Enrollments/reducer";
+import * as client from "../Courses/client";
 
 export default function Dashboard() {
   const { currentUser } = useSelector((state: any) => state.accountReducer);
   const { courses } = useSelector((state: any) => state.coursesReducer);
-  const { enrollments } = useSelector((state: any) => state.enrollmentsReducer);
   const dispatch = useDispatch();
   const [course, setCourse] = useState<any>({
     _id: "0",
@@ -33,6 +38,19 @@ export default function Dashboard() {
   });
   const [showAllEnrollments, setShowAllEnrollments] = useState<any>(false);
 
+  const fetchCourses = async () => {
+    try {
+      const courses = await client.findMyCourses();
+      dispatch(setCourses(courses));
+    } catch (error) {
+      console.error(error);
+    }
+  };
+  useEffect(() => {
+    fetchCourses();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [currentUser]);
+
   const toggleShowAllEnrollments = () => {
     setShowAllEnrollments(!showAllEnrollments);
   };
@@ -41,22 +59,6 @@ export default function Dashboard() {
     return <div>Loading...</div>;
   }
   const isFaculty = currentUser?.role === "FACULTY";
-  const visibleCourses = showAllEnrollments
-    ? courses.map((course: any) => {
-        const enrollment = enrollments.find(
-          (e: any) => e.user === currentUser._id && e.course === course._id
-        );
-        return enrollment
-          ? { ...course, enrollment_id: enrollment._id }
-          : course;
-      })
-    : courses.filter((course: any) =>
-        enrollments.some(
-          (enrollment: any) =>
-            enrollment.user === currentUser._id &&
-            enrollment.course === course._id
-        )
-      );
 
   return (
     <div id="wd-dashboard">
@@ -99,7 +101,7 @@ export default function Dashboard() {
         </>
       )}
       <h2 id="wd-dashboard-published">
-        Published Courses ({visibleCourses.length})
+        Published Courses ({courses.length})
         <button
           className="btn btn-primary float-end"
           id="wd-enrollments-toggle-btn"
@@ -111,7 +113,7 @@ export default function Dashboard() {
       <hr />
       <div id="wd-dashboard-courses">
         <Row xs={1} md={5} className="g-4">
-          {visibleCourses.map((course: any) => (
+          {courses.map((course: any) => (
             <Col
               key={course._id}
               className="wd-dashboard-course"
