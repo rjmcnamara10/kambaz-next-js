@@ -6,6 +6,7 @@ const HTTP_SERVER = process.env.NEXT_PUBLIC_HTTP_SERVER;
 const COURSES_API = `${HTTP_SERVER}/api/courses`;
 const USERS_API = `${HTTP_SERVER}/api/users`;
 const MODULES_API = `${HTTP_SERVER}/api/modules`;
+const ENROLLMENTS_API = `${HTTP_SERVER}/api/enrollments`;
 
 export const fetchAllCourses = async () => {
   const { data } = await axios.get(COURSES_API);
@@ -58,4 +59,22 @@ export const deleteModule = async (moduleId: string) => {
 export const updateModule = async (module: any) => {
   const { data } = await axios.put(`${MODULES_API}/${module._id}`, module);
   return data;
+};
+
+export const fetchAllEnrollments = async () => {
+  const { data } = await axios.get(ENROLLMENTS_API);
+  return data;
+};
+
+export const createEnrollment = async (courseId: string) => {
+  const { data } = await axiosWithCredentials.post(
+    `${USERS_API}/current/enrollments`,
+    { "courseId": courseId }
+  );
+  return data;
+};
+
+export const deleteEnrollment = async (enrollmentId: string) => {
+  const response = await axios.delete(`${ENROLLMENTS_API}/${enrollmentId}`);
+  return response.data;
 };

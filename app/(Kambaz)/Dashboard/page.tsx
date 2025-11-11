@@ -15,12 +15,13 @@ import {
 import { FormControl } from "react-bootstrap";
 import { useDispatch, useSelector } from "react-redux";
 import { setCourses } from "../Courses/reducer";
-import { addEnrollment, deleteEnrollment } from "./Enrollments/reducer";
+import { setEnrollments } from "./Enrollments/reducer";
 import * as client from "../Courses/client";
 
 export default function Dashboard() {
   const { currentUser } = useSelector((state: any) => state.accountReducer);
   const { courses } = useSelector((state: any) => state.coursesReducer);
+  const { enrollments } = useSelector((state: any) => state.enrollmentsReducer);
   const dispatch = useDispatch();
   const [course, setCourse] = useState<any>({
     _id: "0",
@@ -31,12 +32,26 @@ export default function Dashboard() {
     image: "/images/reactjs.jpg",
     description: "New Description",
   });
-  const [showAllEnrollments, setShowAllEnrollments] = useState<any>(false);
+  const [showAllCourses, setShowAllCourses] = useState<any>(false);
 
   const fetchCourses = async () => {
     try {
-      const courses = await client.findMyCourses();
+      let courses;
+      if (showAllCourses) {
+        courses = await client.fetchAllCourses();
+      } else {
+        courses = await client.findMyCourses();
+      }
       dispatch(setCourses(courses));
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
+  const fetchEnrollments = async () => {
+    try {
+      const enrollments = await client.fetchAllEnrollments();
+      dispatch(setEnrollments(enrollments));
     } catch (error) {
       console.error(error);
     }
@@ -70,13 +85,29 @@ export default function Dashboard() {
     );
   };
 
+  const onAddNewEnrollment = async (courseId: string) => {
+    const newEnrollment = await client.createEnrollment(courseId);
+    dispatch(setEnrollments([...enrollments, newEnrollment]));
+  };
+
+  const onDeleteEnrollment = async (enrollmentId: string) => {
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    const status = await client.deleteEnrollment(enrollmentId);
+    dispatch(
+      setEnrollments(
+        enrollments.filter((enrollment: any) => enrollment._id !== enrollmentId)
+      )
+    );
+  };
+
   useEffect(() => {
     fetchCourses();
+    fetchEnrollments();
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [currentUser]);
+  }, [currentUser, showAllCourses]);
 
   const toggleShowAllEnrollments = () => {
-    setShowAllEnrollments(!showAllEnrollments);
+    setShowAllCourses(!showAllCourses);
   };
 
   if (!currentUser) {
@@ -131,100 +162,100 @@ export default function Dashboard() {
           id="wd-enrollments-toggle-btn"
           onClick={toggleShowAllEnrollments}
         >
-          {`Show ${showAllEnrollments ? "My Courses" : "All Courses"}`}
+          {`Show ${showAllCourses ? "My Courses" : "All Courses"}`}
         </button>
       </h2>
       <hr />
       <div id="wd-dashboard-courses">
         <Row xs={1} md={5} className="g-4">
-          {courses.map((course: any) => (
-            <Col
-              key={course._id}
-              className="wd-dashboard-course"
-              style={{ width: "300px" }}
-            >
-              <Card>
-                <Link
-                  href={`/Courses/${course._id}/Home`}
-                  className="wd-dashboard-course-link text-decoration-none text-dark"
-                >
-                  <CardImg
-                    src={course.image}
-                    variant="top"
-                    width="100%"
-                    height={160}
-                  />
-                  <CardBody className="card-body">
-                    <CardTitle className="wd-dashboard-course-title text-nowrap overflow-hidden">
-                      {course.name}
-                    </CardTitle>
-                    <CardText
-                      className="wd-dashboard-course-description overflow-hidden"
-                      style={{ height: "100px" }}
-                    >
-                      {course.description}
-                    </CardText>
-                    <Button variant="primary" className="btn-sm">
-                      Go
-                    </Button>
-                    {isFaculty && (
-                      <>
-                        <button
-                          onClick={(event) => {
-                            event.preventDefault();
-                            onDeleteCourse(course._id);
-                          }}
-                          className="btn btn-danger float-end btn-sm"
-                          id="wd-delete-course-click"
-                        >
-                          Delete
-                        </button>
-                        <button
-                          id="wd-edit-course-click"
-                          onClick={(event) => {
-                            event.preventDefault();
-                            setCourse(course);
-                          }}
-                          className="btn btn-warning me-2 float-end btn-sm"
-                        >
-                          Edit
-                        </button>
-                      </>
-                    )}
-                    {showAllEnrollments &&
-                      (course.enrollment_id ? (
-                        <button
-                          onClick={(event) => {
-                            event.preventDefault();
-                            dispatch(deleteEnrollment(course.enrollment_id));
-                          }}
-                          className="btn btn-danger ms-2 btn-sm"
-                          id="wd-unenroll-click"
-                        >
-                          Unenroll
-                        </button>
-                      ) : (
-                        <button
-                          onClick={(event) => {
-                            event.preventDefault();
-                            dispatch(
-                              addEnrollment({
-                                user: currentUser._id,
-                                course: course._id,
-                              })
-                            );
-                          }}
-                          className="btn btn-success ms-2 btn-sm"
-                          id="wd-enroll-click"
-                        >
-                          Enroll
-                        </button>
-                      ))}
-                  </CardBody>
-                </Link>
-              </Card>
-            </Col>
-          ))}
+          {courses.map((course: any) => {
+            const enrollmentForCourse = enrollments.find(
+              (e: any) => e.user === currentUser._id && e.course === course._id
+            );
+            return (
+              <Col
+                key={course._id}
+                className="wd-dashboard-course"
+                style={{ width: "300px" }}
+              >
+                <Card>
+                  <Link
+                    href={`/Courses/${course._id}/Home`}
+                    className="wd-dashboard-course-link text-decoration-none text-dark"
+                  >
+                    <CardImg
+                      src={course.image}
+                      variant="top"
+                      width="100%"
+                      height={160}
+                    />
+                    <CardBody className="card-body">
+                      <CardTitle className="wd-dashboard-course-title text-nowrap overflow-hidden">
+                        {course.name}
+                      </CardTitle>
+                      <CardText
+                        className="wd-dashboard-course-description overflow-hidden"
+                        style={{ height: "100px" }}
+                      >
+                        {course.description}
+                      </CardText>
+                      <Button variant="primary" className="btn-sm">
+                        Go
+                      </Button>
+                      {isFaculty && (
+                        <>
+                          <button
+                            onClick={(event) => {
+                              event.preventDefault();
+                              onDeleteCourse(course._id);
+                            }}
+                            className="btn btn-danger float-end btn-sm"
+                            id="wd-delete-course-click"
+                          >
+                            Delete
+                          </button>
+                          <button
+                            id="wd-edit-course-click"
+                            onClick={(event) => {
+                              event.preventDefault();
+                              setCourse(course);
+                            }}
+                            className="btn btn-warning me-2 float-end btn-sm"
+                          >
+                            Edit
+                          </button>
+                        </>
+                      )}
+                      {showAllCourses &&
+                        (enrollmentForCourse ? (
+                          <button
+                            onClick={(event) => {
+                              event.preventDefault();
+                              onDeleteEnrollment(enrollmentForCourse._id);
+                            }}
+                            className="btn btn-danger ms-2 btn-sm"
+                            id="wd-unenroll-click"
+                          >
+                            Unenroll
+                          </button>
+                        ) : (
+                          <button
+                            onClick={(event) => {
+                              event.preventDefault();
+                              onAddNewEnrollment(course._id);
+                            }}
+                            className="btn btn-success ms-2 btn-sm"
+                            id="wd-enroll-click"
+                          >
+                            Enroll
+                          </button>
+                        ))}
+                    </CardBody>
+                  </Link>
+                </Card>
+              </Col>
+            );
+          })}
         </Row>
       </div>
     </div>
