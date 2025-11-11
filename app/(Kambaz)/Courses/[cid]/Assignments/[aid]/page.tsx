@@ -4,7 +4,7 @@ import { useEffect, useState } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import { redirect } from "next/dist/client/components/navigation";
 import { useParams } from "next/navigation";
-import { addAssignment, updateAssignment } from "../reducer";
+import { setAssignments } from "../reducer";
 import {
   FormLabel,
   FormControl,
@@ -14,6 +14,7 @@ import {
   Col,
   Button,
 } from "react-bootstrap";
+import * as client from "../client";
 
 export default function AssignmentEditor() {
   const { cid, aid } = useParams();
@@ -30,6 +31,23 @@ export default function AssignmentEditor() {
   const [dueDate, setDueDate] = useState<string>("");
   const [availableFrom, setAvailableFrom] = useState<string>("");
   const [availableUntil, setAvailableUntil] = useState<string>("");
+
+  const onCreateAssignmentForCourse = async (assignment: any) => {
+    if (!cid) return;
+    const createdAssignment = await client.createAssignmentForCourse(
+      cid as string,
+      assignment
+    );
+    dispatch(setAssignments([...assignments, createdAssignment]));
+  };
+
+  const onUpdateAssignment = async (assignment: any) => {
+    await client.updateAssignment(assignment);
+    const newAssignments = assignments.map((a: any) =>
+      a._id === assignment._id ? assignment : a
+    );
+    dispatch(setAssignments(newAssignments));
+  };
 
   useEffect(() => {
     if (!isNew && existing) {
@@ -62,29 +80,25 @@ export default function AssignmentEditor() {
 
   const handleSave = () => {
     if (isNew) {
-      dispatch(
-        addAssignment({
-          title,
-          description,
-          points: typeof points === "number" ? points : Number(points || 0),
-          due_date: dueDate || undefined,
-          available_date: availableFrom || undefined,
-          available_until: availableUntil || undefined,
-          course: cid,
-        })
-      );
+      onCreateAssignmentForCourse({
+        title,
+        description,
+        points: typeof points === "number" ? points : Number(points || 0),
+        due_date: dueDate || undefined,
+        available_date: availableFrom || undefined,
+        available_until: availableUntil || undefined,
+        course: cid,
+      });
     } else {
-      dispatch(
-        updateAssignment({
-          ...existing,
-          title,
-          description,
-          points: typeof points === "number" ? points : Number(points || 0),
-          due_date: dueDate || undefined,
-          available_date: availableFrom || undefined,
-          available_until: availableUntil || undefined,
-        })
-      );
+      onUpdateAssignment({
+        ...existing,
+        title,
+        description,
+        points: typeof points === "number" ? points : Number(points || 0),
+        due_date: dueDate || undefined,
+        available_date: availableFrom || undefined,
+        available_until: availableUntil || undefined,
+      });
     }
     redirect(`/Courses/${cid}/Assignments`);
   };

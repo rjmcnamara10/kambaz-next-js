@@ -7,8 +7,10 @@ import AssignmentControlButtons from "./AssignmentControlButtons";
 import { ListGroup, ListGroupItem } from "react-bootstrap";
 import { BsGripVertical } from "react-icons/bs";
 import { useParams } from "next/navigation";
-import { deleteAssignment } from "./reducer";
+import { setAssignments } from "./reducer";
+import { useEffect } from "react";
 import { useSelector, useDispatch } from "react-redux";
+import * as client from "./client";
 
 export default function Assignments() {
   const { cid } = useParams();
@@ -17,11 +19,26 @@ export default function Assignments() {
   const isFaculty = currentUser?.role === "FACULTY";
   const dispatch = useDispatch();
 
+  const fetchAssignments = async () => {
+    const assignments = await client.findAssignmentsForCourse(cid as string);
+    dispatch(setAssignments(assignments));
+  };
+
+  const onRemoveAssignment = async (assignmentId: string) => {
+    await client.deleteAssignment(assignmentId);
+    dispatch(
+      setAssignments(assignments.filter((a: any) => a._id !== assignmentId))
+    );
+  };
+
+  useEffect(() => {
+    fetchAssignments();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
   return (
     <div id="wd-assignments">
-      {isFaculty && (
-        <AssignmentsControls />
-      )}
+      {isFaculty && <AssignmentsControls />}
       <br />
       <br />
       <ListGroup className="rounded-0" id="wd-groups">
@@ -55,8 +72,10 @@ export default function Assignments() {
                         </span>
                       )}
                       <p className="mb-0">
-                        <span className="text-danger">Multiple Modules</span> |{" "}
-                        <b>Not available until</b>{" "}
+                        <span className="text-danger">
+                          Multiple Assignments
+                        </span>{" "}
+                        | <b>Not available until</b>{" "}
                         {new Date(assignment.available_date).toLocaleString(
                           "default",
                           { month: "long" }
@@ -89,7 +108,7 @@ export default function Assignments() {
                   <AssignmentControlButtons
                     assignmentId={assignment._id}
                     deleteAssignment={(assignmentId) => {
-                      dispatch(deleteAssignment(assignmentId));
+                      onRemoveAssignment(assignmentId);
                     }}
                     isFaculty={isFaculty}
                   />
