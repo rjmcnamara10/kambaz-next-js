@@ -50,7 +50,7 @@ export default function Dashboard() {
 
   const fetchEnrollments = async () => {
     try {
-      const enrollments = await client.fetchAllEnrollments();
+      const enrollments = await client.fetchAllEnrollments(currentUser._id);
       dispatch(setEnrollments(enrollments));
     } catch (error) {
       console.error(error);
@@ -86,13 +86,13 @@ export default function Dashboard() {
   };
 
   const onAddNewEnrollment = async (courseId: string) => {
-    const newEnrollment = await client.createEnrollment(courseId);
+    const newEnrollment = await client.enrollIntoCourse(currentUser._id, courseId);
     dispatch(setEnrollments([...enrollments, newEnrollment]));
   };
 
   const onDeleteEnrollment = async (enrollmentId: string) => {
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    const status = await client.deleteEnrollment(enrollmentId);
+    const status = await client.unenrollFromCourse(currentUser._id, enrollmentId);
     dispatch(
       setEnrollments(
         enrollments.filter((enrollment: any) => enrollment._id !== enrollmentId)
@@ -170,7 +170,7 @@ export default function Dashboard() {
         <Row xs={1} md={5} className="g-4">
           {courses.map((course: any) => {
             const enrollmentForCourse = enrollments.find(
-              (e: any) => e.user === currentUser._id && e.course === course._id
+              (e: any) => e.course === course._id
             );
             return (
               <Col
@@ -184,7 +184,7 @@ export default function Dashboard() {
                     className="wd-dashboard-course-link text-decoration-none text-dark"
                   >
                     <CardImg
-                      src={course.image}
+                      src={course.image ?? "/images/reactjs.jpg"}
                       variant="top"
                       width="100%"
                       height={160}

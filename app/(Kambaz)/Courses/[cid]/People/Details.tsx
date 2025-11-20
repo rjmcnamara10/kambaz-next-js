@@ -14,10 +14,12 @@ export default function PeopleDetails({
   onClose: () => void;
 }) {
   const [user, setUser] = useState<any>({});
-  const [name, setName] = useState(user?.firstName && user?.lastName ? `${user.firstName} ${user.lastName}` : "");
+  const [name, setName] = useState("");
   const [email, setEmail] = useState("");
+  const [role, setRole] = useState("");
   const [editing, setEditing] = useState(false);
   const [editingEmail, setEditingEmail] = useState(false);
+  const [editingRole, setEditingRole] = useState(false);
 
   const fetchUser = async () => {
     if (!uid) return;
@@ -31,17 +33,46 @@ export default function PeopleDetails({
   };
 
   const saveUser = async () => {
-    const [firstName, lastName] = name.split(" ");
-    const updatedUser = { ...user, firstName, lastName, email };
+    let firstName = user.firstName;
+    let lastName = user.lastName;
+    let updatedEmail = user.email;
+    let updatedRole = user.role;
+
+    if (editing) {
+      [firstName, lastName] = name.split(" ");
+    }
+    if (editingEmail) {
+      updatedEmail = email;
+    }
+    if (editingRole) {
+      updatedRole = role;
+    }
+    const updatedUser = {
+      ...user,
+      firstName,
+      lastName,
+      email: updatedEmail,
+      role: updatedRole,
+    };
     await client.updateUser(updatedUser);
     setUser(updatedUser);
     setEditing(false);
+    setEditingEmail(false);
+    setEditingRole(false);
     onClose();
   };
 
   useEffect(() => {
     if (uid) fetchUser();
   }, [uid]);
+
+  useEffect(() => {
+    if (user) {
+      setName(`${user.firstName ?? ""} ${user.lastName ?? ""}`.trim());
+      setEmail(user.email ?? "");
+      setRole(user.role ?? "");
+    }
+  }, [user]);
 
   if (!uid) return null;
   return (
@@ -110,18 +141,53 @@ export default function PeopleDetails({
           <FormControl
             type="email"
             className="w-50 wd-edit-email"
-            defaultValue={`${user.email}`}
+            defaultValue={user.email}
+            required
             onChange={(e) => setEmail(e.target.value)}
             onKeyDown={(e) => {
               if (e.key === "Enter") {
-                saveUser();
+                if (e.currentTarget.checkValidity()) {
+                  saveUser();
+                }
               }
             }}
           />
         )}
       </span>
       <br />
-      <b>Roles:</b> <span className="wd-roles"> {user.role} </span> <br />
+      <b>Roles:</b>
+      <span className="wd-roles">
+        {!editingRole && (
+          <FaPencil
+            onClick={() => setEditingRole(true)}
+            className="float-end fs-5 mt-2 wd-edit"
+          />
+        )}
+        {editingRole && (
+          <FaCheck
+            onClick={() => saveUser()}
+            className="float-end fs-5 mt-2 me-2 wd-save"
+          />
+        )}
+        {!editingRole && (
+          <div className="wd-role" onClick={() => setEditingRole(true)}>
+            {user.role}
+          </div>
+        )}
+        {user && editingRole && (
+          <select
+            value={role}
+            onChange={(e) => setRole(e.target.value)}
+            className="form-select float-start wd-edit-role"
+          >
+            <option value="STUDENT">Student</option>
+            <option value="TA">Assistant</option>
+            <option value="FACULTY">Faculty</option>
+            <option value="ADMIN">Administrator</option>
+          </select>
+        )}
+      </span>
+      <br />
       <b>Login ID:</b> <span className="wd-login-id"> {user.loginId} </span>
       <br />
       <b>Section:</b> <span className="wd-section"> {user.section} </span>
