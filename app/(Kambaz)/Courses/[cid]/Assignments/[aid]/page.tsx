@@ -42,7 +42,7 @@ export default function AssignmentEditor() {
   };
 
   const onUpdateAssignment = async (assignment: any) => {
-    await client.updateAssignment(assignment);
+    await client.updateAssignment(cid as string, assignment);
     const newAssignments = assignments.map((a: any) =>
       a._id === assignment._id ? assignment : a
     );

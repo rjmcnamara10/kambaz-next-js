@@ -86,18 +86,13 @@ export default function Dashboard() {
   };
 
   const onAddNewEnrollment = async (courseId: string) => {
-    const newEnrollment = await client.enrollIntoCourse(currentUser._id, courseId);
-    dispatch(setEnrollments([...enrollments, newEnrollment]));
+    await client.enrollIntoCourse(currentUser._id, courseId);
+    fetchEnrollments();
   };
 
   const onDeleteEnrollment = async (enrollmentId: string) => {
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    const status = await client.unenrollFromCourse(currentUser._id, enrollmentId);
-    dispatch(
-      setEnrollments(
-        enrollments.filter((enrollment: any) => enrollment._id !== enrollmentId)
-      )
-    );
+    await client.unenrollFromCourse(currentUser._id, enrollmentId);
+    fetchEnrollments();
   };
 
   useEffect(() => {
@@ -170,7 +165,7 @@ export default function Dashboard() {
         <Row xs={1} md={5} className="g-4">
           {courses.map((course: any) => {
             const enrollmentForCourse = enrollments.find(
-              (e: any) => e.course === course._id
+              (e: any) => e._id === course._id
             );
             return (
               <Col

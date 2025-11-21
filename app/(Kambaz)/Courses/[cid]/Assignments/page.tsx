@@ -25,7 +25,7 @@ export default function Assignments() {
   };
 
   const onRemoveAssignment = async (assignmentId: string) => {
-    await client.deleteAssignment(assignmentId);
+    await client.deleteAssignment(cid as string, assignmentId);
     dispatch(
       setAssignments(assignments.filter((a: any) => a._id !== assignmentId))
     );
