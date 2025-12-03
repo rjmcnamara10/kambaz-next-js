@@ -9,7 +9,6 @@ import {
   FormLabel,
   FormControl,
   FormSelect,
-  FormCheck,
   Row,
   Col,
   Button,
@@ -92,6 +91,53 @@ export default function QuizEditor() {
   }
 
   const handleSave = () => {
+    if (isNew) {
+      onCreateQuizForCourse({
+        title,
+        description,
+        published,
+        points,
+        time_limit: timeLimit,
+        type,
+        assignment_group: assignmentGroup,
+        shuffle_answers: shuffleAnswers,
+        multiple_attempts: multipleAttempts,
+        show_correct_answers: showCorrectAnswers,
+        access_code: accessCode,
+        one_q_at_time: oneQAtTime,
+        lock_questions: lockQuestions,
+        webcam_required: webcamRequired,
+        due_date: dueDate,
+        available_date: availableFrom,
+        available_until: availableUntil,
+      });
+    } else {
+      onUpdateAssignment({
+        ...existing,
+        title,
+        description,
+        published,
+        points,
+        time_limit: timeLimit,
+        type,
+        assignment_group: assignmentGroup,
+        shuffle_answers: shuffleAnswers,
+        multiple_attempts: multipleAttempts,
+        show_correct_answers: showCorrectAnswers,
+        access_code: accessCode,
+        one_q_at_time: oneQAtTime,
+        lock_questions: lockQuestions,
+        webcam_required: webcamRequired,
+        due_date: dueDate,
+        available_date: availableFrom,
+        available_until: availableUntil,
+      });
+    }
+    redirect(`/Courses/${cid}/Quizzes/${qid}`);
+  };
+
+  const handleSavePublish = () => {
+    setPublished(true);
     if (isNew) {
       onCreateQuizForCourse({
         title,
@@ -244,6 +290,15 @@ export default function QuizEditor() {
           onClick={handleCancel}
         >
           Cancel
+        </Button>
+        <Button
+          variant="danger"
+          size="lg"
+          className="me-1"
+          id="wd-save-publish-btn"
+          onClick={handleSavePublish}
+        >
+          Save and Publish
         </Button>
         <Button
           variant="danger"

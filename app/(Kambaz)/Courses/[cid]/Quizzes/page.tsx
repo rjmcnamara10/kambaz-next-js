@@ -41,7 +41,7 @@ export default function Quizzes() {
             className="me-1"
             id="wd-add-quiz-btn"
             onClick={() => {
-              redirect(`/Courses/${cid}/Quizzes/new`);
+              redirect(`/Courses/${cid}/Quizzes/new/edit`);
             }}
           >
             <FaPlus
