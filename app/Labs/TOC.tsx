@@ -4,29 +4,29 @@ export default function TOC() {
   return (
     <Nav variant="pills">
       <NavItem>
-        <NavLink href="/Labs" as={Link}>
-          Labs
-        </NavLink>
+        <Link href="/Labs">
+          <NavLink as="a">Labs</NavLink>
+        </Link>
       </NavItem>
       <NavItem>
-        <NavLink href="/Labs/Lab1" as={Link}>
-          Lab 1
-        </NavLink>
+        <Link href="/Labs/Lab1">
+          <NavLink as="a">Lab 1</NavLink>
+        </Link>
       </NavItem>
       <NavItem>
-        <NavLink href="/Labs/Lab2" as={Link}>
-          Lab 2
-        </NavLink>
+        <Link href="/Labs/Lab2">
+          <NavLink as="a">Lab 2</NavLink>
+        </Link>
       </NavItem>
       <NavItem>
-        <NavLink href="/Labs/Lab3" as={Link}>
-          Lab 3
-        </NavLink>
+        <Link href="/Labs/Lab3">
+          <NavLink as="a">Lab 3</NavLink>
+        </Link>
       </NavItem>
       <NavItem>
-        <NavLink href="/" as={Link}>
-          Kambaz
-        </NavLink>
+        <Link href="/">
+          <NavLink as="a">Kambaz</NavLink>
+        </Link>
       </NavItem>
       <NavItem>
         <NavLink href="https://github.com/rjmcnamara10/kambaz-next-js">
