@@ -39,6 +39,7 @@ export default function QuizEditor() {
 
   const [shuffleAnswers, setShuffleAnswers] = useState(true);
   const [multipleAttempts, setMultipleAttempts] = useState(false);
+  const [numberAttempts, setNumberAttempts] = useState(1);
   const [showCorrectAnswers, setShowCorrectAnswers] = useState("IMMEDIATELY");
   const [accessCode, setAccessCode] = useState("");
   const [oneQAtTime, setOneQAtTime] = useState(true);
@@ -55,6 +56,7 @@ export default function QuizEditor() {
     if (!cid) return;
     const createdQuiz = await client.createQuizForCourse(cid as string, quiz);
     dispatch(setQuizzes([...quizzes, createdQuiz]));
+    return createdQuiz;
   };
 
   const onUpdateAssignment = async (quiz: any) => {
@@ -107,6 +109,7 @@ export default function QuizEditor() {
     assignment_group: assignmentGroup,
     shuffle_answers: shuffleAnswers,
     multiple_attempts: multipleAttempts,
+    number_attempts: numberAttempts,
     show_correct_answers: showCorrectAnswers,
     access_code: accessCode,
     one_q_at_time: oneQAtTime,
@@ -115,13 +118,14 @@ export default function QuizEditor() {
     due_date: dueDate,
     available_date: availableFrom,
     available_until: availableUntil,
+    questions,
   });
 
   const saveQuiz = async (publish: boolean) => {
     const quizObj = buildQuizObject(publish);
     if (isNew) {
-      await onCreateQuizForCourse(quizObj);
-      redirect(`/Courses/${cid}/Quizzes/${quizObj._id}`);
+      const createdQuiz = await onCreateQuizForCourse(quizObj);
+      redirect(`/Courses/${cid}/Quizzes/${createdQuiz._id}`);
     } else {
       await onUpdateAssignment(quizObj);
       redirect(`/Courses/${cid}/Quizzes/${qid}`);
@@ -249,6 +253,17 @@ export default function QuizEditor() {
                   Multiple Attempts
                 </label>
               </div>
+              {multipleAttempts && (
+                <div className="mt-2">
+                  <FormLabel>Number of Attempts Allowed</FormLabel>
+                  <FormControl
+                    type="number"
+                    value={numberAttempts}
+                    min={1}
+                    onChange={(e) => setNumberAttempts(Number(e.target.value))}
+                  />
+                </div>
+              )}
               <div className="form-check">
                 <input
                   className="form-check-input"

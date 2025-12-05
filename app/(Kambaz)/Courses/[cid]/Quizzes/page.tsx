@@ -1,12 +1,14 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 "use client";
 import { useParams } from "next/navigation";
+import Link from "next/link";
 import { useEffect } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import { redirect } from "next/dist/client/components/navigation";
 import { ListGroup, ListGroupItem, Button } from "react-bootstrap";
 import { setQuizzes } from "./reducer";
 import * as client from "./client";
+import { BsGripVertical } from "react-icons/bs";
 import { FaPlus } from "react-icons/fa6";
 
 export default function Quizzes() {
@@ -59,7 +61,41 @@ export default function Quizzes() {
           <div className="wd-title p-3 ps-2 bg-secondary">Quizzes</div>
           <ListGroup className="wd-quizzes rounded-0">
             {quizzes.map((quiz: any) => (
-              <div key={quiz._id}></div>
+              <ListGroupItem
+                key={quiz._id}
+                className="wd-quiz p-3 ps-1 d-flex justify-content-between align-items-center"
+              >
+                <div className="d-flex align-items-center">
+                  <BsGripVertical className="me-2 fs-3" />
+                  <div className="wd-quiz-info">
+                    {currentUser?.role === "FACULTY" ? (
+                      <Link
+                        href={`/Courses/${cid}/Quizzes/${quiz._id}`}
+                        className="wd-quiz-link text-black text-decoration-none fw-bold"
+                      >
+                        {quiz.title || "Untitled Quiz"}
+                      </Link>
+                    ) : (
+                      <span className="text-black fw-bold">{quiz.title || "Untitled Quiz"}</span>
+                    )}
+                    <p className="mb-0">
+                      | <b>Due</b>{" "}
+                      {new Date(quiz.due_date).toLocaleString("default", {
+                        month: "long",
+                      })}{" "}
+                      {new Date(quiz.due_date).getDate()} at{" "}
+                      {new Date(quiz.due_date)
+                        .toLocaleTimeString("en-US", {
+                          hour: "numeric",
+                          minute: "2-digit",
+                          hour12: true,
+                        })
+                        .toLowerCase()}{" "}
+                      | {quiz.points} pts | {quiz.questions.length} Questions
+                    </p>
+                  </div>
+                </div>
+              </ListGroupItem>
             ))}
           </ListGroup>
         </ListGroupItem>
