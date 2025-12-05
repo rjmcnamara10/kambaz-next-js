@@ -18,6 +18,14 @@ export default function Quizzes() {
   const isFaculty = currentUser?.role === "FACULTY";
   const dispatch = useDispatch();
 
+  const now = new Date();
+
+  const sortedQuizzes = [...quizzes].sort(
+    (a, b) =>
+      new Date(a.available_date).getTime() -
+      new Date(b.available_date).getTime()
+  );
+
   const fetchQuizzes = async () => {
     const quizzes = await client.findQuizzesForCourse(cid as string);
     dispatch(setQuizzes(quizzes));
@@ -60,7 +68,7 @@ export default function Quizzes() {
         <ListGroupItem className="wd-group p-0 mb-5 fs-5 border-gray">
           <div className="wd-title p-3 ps-2 bg-secondary">Quizzes</div>
           <ListGroup className="wd-quizzes rounded-0">
-            {quizzes.map((quiz: any) => (
+            {sortedQuizzes.map((quiz: any) => (
               <ListGroupItem
                 key={quiz._id}
                 className="wd-quiz p-3 ps-1 d-flex justify-content-between align-items-center"
@@ -76,9 +84,35 @@ export default function Quizzes() {
                         {quiz.title || "Untitled Quiz"}
                       </Link>
                     ) : (
-                      <span className="text-black fw-bold">{quiz.title || "Untitled Quiz"}</span>
+                      <span className="text-black fw-bold">
+                        {quiz.title || "Untitled Quiz"}
+                      </span>
                     )}
                     <p className="mb-0">
+                      {now > new Date(quiz.available_until) && <>Closed </>}
+                      {now >= new Date(quiz.available_date) &&
+                        now <= new Date(quiz.available_until) && (
+                          <>Available </>
+                        )}
+                      {now < new Date(quiz.available_date) && (
+                        <>
+                          Not available until{" "}
+                          {new Date(quiz.available_date).toLocaleString(
+                            "default",
+                            {
+                              month: "long",
+                            }
+                          )}{" "}
+                          {new Date(quiz.available_date).getDate()} at{" "}
+                          {new Date(quiz.available_date)
+                            .toLocaleTimeString("en-US", {
+                              hour: "numeric",
+                              minute: "2-digit",
+                              hour12: true,
+                            })
+                            .toLowerCase()}{" "}
+                        </>
+                      )}
                       | <b>Due</b>{" "}
                       {new Date(quiz.due_date).toLocaleString("default", {
                         month: "long",
