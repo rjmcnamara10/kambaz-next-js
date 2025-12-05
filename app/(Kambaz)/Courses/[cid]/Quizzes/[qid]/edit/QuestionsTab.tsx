@@ -8,6 +8,7 @@ import {
   Col,
   FormLabel,
 } from "react-bootstrap";
+import { FaPlus } from "react-icons/fa6";
 
 const QUESTION_TYPES = [
   { value: "MC", label: "Multiple Choice" },
@@ -25,37 +26,85 @@ export default function QuestionsTab({
   setPoints: (points: number) => void;
 }) {
   const [editingIndex, setEditingIndex] = useState<number | null>(null);
-  const [editQuestion, setEditQuestion] = useState<any>(null);
+  // const [editQuestion, setEditQuestion] = useState<any>(null);
+  const [editQTitle, setEditQTitle] = useState("");
+  const [editQPoints, setEditQPoints] = useState(0);
+  const [editQText, setEditQText] = useState("");
+  const [editQType, setEditQType] = useState("MC");
+  const [editQMCOptions, setEditQMCOptions] = useState<string[]>([""]); // multiple choice
+  const [editQMCCorrect, setEditQMCCorrect] = useState(""); // multiple choice
+  const [editQTFCorrect, setEditQTFCorrect] = useState(true); // true/false
+  const [editQFIBCorrect, setEditQFIBCorrect] = useState<string[]>([""]); // fill in the blank
 
   const handleAddQuestion = () => {
+    setEditQTitle("");
+    setEditQPoints(0);
+    setEditQText("");
+    setEditQType("MC");
+    setEditQMCOptions([""]);
+    setEditQMCCorrect("");
+    setEditQTFCorrect(true);
+    setEditQFIBCorrect([""]);
     const newQ = {
-      type: "MC",
-      text: "",
-      choices: [""],
-      answer: "",
+      title: "",
       points: 0,
+      question: "",
+      type: "MC",
+      mcOptions: [""],
+      mcCorrect: "",
     };
     setQuestions([...questions, newQ]);
     setEditingIndex(questions.length);
-    setEditQuestion(newQ);
+    // setEditQuestion(newQ);
   };
 
   const handleEdit = (idx: number) => {
     setEditingIndex(idx);
-    setEditQuestion({ ...questions[idx] });
+    const editQ = questions[idx];
+    setEditQTitle(editQ.title || "");
+    setEditQPoints(editQ.points || 0);
+    setEditQText(editQ.question || "");
+    setEditQType(editQ.type || "MC");
+    setEditQMCOptions(editQ.mcOptions || []);
+    setEditQMCCorrect(editQ.mcCorrect || "");
+    setEditQTFCorrect(editQ.tfCorrect || true);
+    setEditQFIBCorrect(editQ.fibCorrect || []);
+
+    // setEditQuestion({ ...questions[idx] });
   };
 
   const handleSave = () => {
-    const updated = [...questions];
-    updated[editingIndex!] = editQuestion;
-    setQuestions(updated);
-    setEditingIndex(null);
-    setEditQuestion(null);
+    if (editingIndex !== null) {
+      const updated = [...questions];
+
+      const saveQ: any = {
+        title: editQTitle,
+        points: editQPoints,
+        question: editQText,
+        type: editQType,
+      };
+
+      if (editQType === "MC") {
+        saveQ["mcOptions"] = editQMCOptions;
+        saveQ["mcCorrect"] = editQMCCorrect;
+      } else if (editQType === "TF") {
+        saveQ["tfCorrect"] = editQTFCorrect;
+      } else if (editQType === "FIB") {
+        saveQ["fibCorrect"] = editQFIBCorrect;
+      }
+
+      updated[editingIndex] = saveQ;
+      // console.log(editQuestion);
+      setQuestions(updated);
+      setEditingIndex(null);
+      // setEditQuestion(null);
+      // console.log(questions);
+    }
   };
 
   const handleCancel = () => {
     setEditingIndex(null);
-    setEditQuestion(null);
+    // setEditQuestion(null);
   };
 
   useEffect(() => {
@@ -63,25 +112,21 @@ export default function QuestionsTab({
   }, [questions, setPoints]);
 
   const renderEditor = () => {
-    if (!editQuestion) return null;
+    // if (!editQuestion) return null;
     return (
       <div className="border p-3 mb-3">
         <Row className="mb-2">
           <Col sm={8}>
             <FormControl
               placeholder="Question text"
-              value={editQuestion.text}
-              onChange={(e) =>
-                setEditQuestion({ ...editQuestion, text: e.target.value })
-              }
+              value={editQText}
+              onChange={(e) => setEditQText(e.target.value)}
             />
           </Col>
           <Col sm={4}>
             <FormSelect
-              value={editQuestion.type}
-              onChange={(e) =>
-                setEditQuestion({ ...editQuestion, type: e.target.value })
-              }
+              value={editQType}
+              onChange={(e) => setEditQType(e.target.value)}
             >
               {QUESTION_TYPES.map((qt) => (
                 <option key={qt.value} value={qt.value}>
@@ -95,29 +140,24 @@ export default function QuestionsTab({
           <Col sm={4}>
             <FormControl
               type="number"
-              value={editQuestion.points}
-              onChange={(e) =>
-                setEditQuestion({
-                  ...editQuestion,
-                  points: Number(e.target.value),
-                })
-              }
+              value={editQPoints}
+              onChange={(e) => setEditQPoints(Number(e.target.value))}
               placeholder="Points"
             />
           </Col>
         </Row>
-        {editQuestion.type === "MC" && (
+        {editQType === "MC" && (
           <div>
-            {editQuestion.choices.map((choice: string, idx: number) => (
+            {editQMCOptions.map((option: string, idx: number) => (
               <Row key={idx} className="mb-1">
                 <Col sm={10}>
                   <FormControl
-                    value={choice}
-                    placeholder={`Choice ${idx + 1}`}
+                    value={option}
+                    placeholder={`Option ${idx + 1}`}
                     onChange={(e) => {
-                      const choices = [...editQuestion.choices];
-                      choices[idx] = e.target.value;
-                      setEditQuestion({ ...editQuestion, choices });
+                      const options = [...editQMCOptions];
+                      options[idx] = e.target.value;
+                      setEditQMCOptions(options);
                     }}
                   />
                 </Col>
@@ -126,12 +166,12 @@ export default function QuestionsTab({
                     variant="danger"
                     size="sm"
                     onClick={() => {
-                      const choices = editQuestion.choices.filter(
+                      const options = editQMCOptions.filter(
                         (_: any, i: number) => i !== idx
                       );
-                      setEditQuestion({ ...editQuestion, choices });
+                      setEditQMCOptions(options);
                     }}
-                    disabled={editQuestion.choices.length <= 1}
+                    disabled={editQMCOptions.length <= 1}
                   >
                     Remove
                   </Button>
@@ -142,55 +182,79 @@ export default function QuestionsTab({
               variant="primary"
               size="sm"
               onClick={() =>
-                setEditQuestion({
-                  ...editQuestion,
-                  choices: [...editQuestion.choices, ""],
-                })
+                setEditQMCOptions([...editQMCOptions, ""])
               }
             >
-              Add Choice
+              Add Option
             </Button>
             <Row>
               <FormLabel className="mt-2">Correct Answer</FormLabel>
               <FormSelect
-                value={editQuestion.answer}
-                onChange={(e) =>
-                  setEditQuestion({ ...editQuestion, answer: e.target.value })
-                }
+                value={editQMCCorrect}
+                onChange={(e) => setEditQMCCorrect(e.target.value)}
               >
-                {editQuestion.choices.map((choice: string, idx: number) => (
-                  <option key={idx} value={choice}>
-                    {choice || `Choice ${idx + 1}`}
+                {editQMCOptions.map((option: string, idx: number) => (
+                  <option key={idx} value={option}>
+                    {option || `Option ${idx + 1}`}
                   </option>
                 ))}
               </FormSelect>
             </Row>
           </div>
         )}
-        {editQuestion.type === "TF" && (
+        {editQType === "TF" && (
           <div>
             <FormLabel>Correct Answer</FormLabel>
             <FormSelect
-              value={editQuestion.answer}
-              onChange={(e) =>
-                setEditQuestion({ ...editQuestion, answer: e.target.value })
-              }
+              value={editQTFCorrect ? "true" : "false"}
+              onChange={(e) => setEditQTFCorrect(e.target.value === "true" ? true : false)}
             >
               <option value="true">True</option>
               <option value="false">False</option>
             </FormSelect>
           </div>
         )}
-        {editQuestion.type === "FIB" && (
+        {editQType === "FIB" && (
           <div>
-            <FormLabel>Correct Answer</FormLabel>
-            <FormControl
-              value={editQuestion.answer}
-              onChange={(e) =>
-                setEditQuestion({ ...editQuestion, answer: e.target.value })
+            {editQFIBCorrect.map((answer: string, idx: number) => (
+              <Row key={idx} className="mb-1">
+                <Col sm={10}>
+                  <FormControl
+                    value={answer}
+                    placeholder={`Answer ${idx + 1}`}
+                    onChange={(e) => {
+                      const answers = [...editQFIBCorrect];
+                      answers[idx] = e.target.value;
+                      setEditQFIBCorrect(answers);
+                    }}
+                  />
+                </Col>
+                <Col sm={2}>
+                  <Button
+                    variant="danger"
+                    size="sm"
+                    onClick={() => {
+                      const answers = editQFIBCorrect.filter(
+                        (_: any, i: number) => i !== idx
+                      );
+                      setEditQFIBCorrect(answers);
+                    }}
+                    disabled={editQFIBCorrect.length <= 1}
+                  >
+                    Remove
+                  </Button>
+                </Col>
+              </Row>
+            ))}
+            <Button
+              variant="primary"
+              size="sm"
+              onClick={() =>
+                setEditQFIBCorrect([...editQFIBCorrect, ""])
               }
-              placeholder="Correct answer"
-            />
+            >
+              Add Answer
+            </Button>
           </div>
         )}
         <div className="d-flex gap-2 justify-content-end mt-3">
@@ -205,32 +269,60 @@ export default function QuestionsTab({
     );
   };
 
+  const renderSavedQuestion = (q: any, idx: number) => {
+    return (
+      <div className="border p-3 mb-3">
+        <Row className="mb-2">
+          <Col sm={8}>{q.title || "Untitled Question"}</Col>
+          <Col sm={4}>
+            <FormSelect value={q.type} disabled={true}></FormSelect>
+          </Col>
+        </Row>
+        <Row className="mb-2">
+          <Col sm={4}>
+            <span>{q.points} pts</span>
+          </Col>
+        </Row>
+        {q.type === "MC" && (
+          <div>
+            {q.mcOptions.map((option: string, idx: number) => (
+              <div key={idx}>{option || `Option ${idx + 1}`}</div>
+            ))}
+            <Row>
+              <FormLabel className="mt-2">Correct Answer</FormLabel>
+              <FormSelect value={q.mcCorrect} disabled={true}></FormSelect>
+            </Row>
+          </div>
+        )}
+        {q.type === "TF" && (
+          <div>
+            <FormLabel>Correct Answer</FormLabel>
+            <div>{q.tfCorrect ? "True" : "False"}</div>
+          </div>
+        )}
+        {q.type === "FIB" && (
+          <div>
+            <FormLabel>Correct Answers</FormLabel>
+            {q.fibCorrect.map((answer: string, idx: number) => (
+              <div key={idx}>{answer}</div>
+            ))}
+          </div>
+        )}
+        <div className="d-flex gap-2 justify-content-end mt-3">
+          <Button onClick={() => handleEdit(idx)}>Edit</Button>
+        </div>
+      </div>
+    );
+  };
+
   return (
     <div>
       {questions.map((q, idx) =>
-        editingIndex === idx ? (
-          renderEditor()
-        ) : (
-          <div key={idx} className="border p-2 mb-2">
-            <div className="d-flex justify-content-between align-items-center">
-              <span>
-                <strong>{q.text || "Untitled Question"}</strong> (
-                {QUESTION_TYPES.find((t) => t.value === q.type)?.label})
-              </span>
-              <span>{q.points} pts</span>
-              <Button
-                variant="danger"
-                size="sm"
-                onClick={() => handleEdit(idx)}
-              >
-                Edit
-              </Button>
-            </div>
-          </div>
-        )
+        editingIndex === idx ? renderEditor() : renderSavedQuestion(q, idx)
       )}
-      <div className="d-flex justify-content-center">
+      <div className="d-flex justify-content-center align-items-center">
         <Button variant="secondary" size="lg" onClick={handleAddQuestion}>
+          <FaPlus className="me-2" />
           New Question
         </Button>
       </div>
