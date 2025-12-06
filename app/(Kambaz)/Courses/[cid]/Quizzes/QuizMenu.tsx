@@ -39,7 +39,7 @@ export default function QuizMenu({
         <Dropdown.Menu>
           <Dropdown.Item
             onClick={() => {
-              redirect(`/Courses/${cid}/Quizzes/${quiz._id}`);
+              redirect(`/Courses/${cid}/Quizzes/${quiz._id}/edit`);
             }}
           >
             Edit

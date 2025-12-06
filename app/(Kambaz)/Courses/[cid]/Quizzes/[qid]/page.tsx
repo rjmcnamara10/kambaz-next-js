@@ -1,315 +1,249 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 "use client";
-import { useEffect, useState } from "react";
+import { useState, useEffect } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import { redirect } from "next/dist/client/components/navigation";
 import { useParams } from "next/navigation";
+import { Row, Col, Button } from "react-bootstrap";
 import { setQuizzes } from "../reducer";
-import {
-  FormLabel,
-  FormControl,
-  FormSelect,
-  Row,
-  Col,
-  Button,
-} from "react-bootstrap";
 import * as client from "../client";
 
-export default function QuizEditor() {
+const QUIZ_TYPES = [
+  { value: "GRADED_QUIZ", label: "Graded Quiz" },
+  { value: "PRACTICE_QUIZ", label: "Practice Quiz" },
+  { value: "GRADED_SURVEY", label: "Graded Survey" },
+  { value: "UNGRADED_SURVEY", label: "Ungraded Survey" },
+];
+
+const SHOW_CORRECT_ANSWERS = [
+  { value: "IMMEDIATELY", label: "Immediately" },
+  { value: "AFTER_DUE_DATE", label: "After Due Date" },
+  { value: "NEVER", label: "Never" },
+];
+
+export default function QuizDetails() {
   const { cid, qid } = useParams();
   const { quizzes } = useSelector((state: any) => state.quizzesReducer);
-  const { currentUser } = useSelector((state: any) => state.accountReducer);
+  // const { currentUser } = useSelector((state: any) => state.accountReducer);
+  // const isFaculty = currentUser?.role === "FACULTY";
   const dispatch = useDispatch();
 
-  const isNew = qid === "new";
-  const existing = quizzes.find((q: any) => q._id === qid);
+  const [quiz, setQuiz] = useState<any>(null);
 
-  const [title, setTitle] = useState("");
-  const [description, setDescription] = useState("");
-  const [published, setPublished] = useState(false);
-  const [points, setPoints] = useState(0);
-  const [timeLimit, setTimeLimit] = useState(20);
-
-  const [type, setType] = useState("GRADED_QUIZ");
-  const [assignmentGroup, setAssignmentGroup] = useState("QUIZZES");
-
-  const [shuffleAnswers, setShuffleAnswers] = useState(true);
-  const [multipleAttempts, setMultipleAttempts] = useState(false);
-  const [showCorrectAnswers, setShowCorrectAnswers] = useState("IMMEDIATELY");
-  const [accessCode, setAccessCode] = useState("");
-  const [oneQAtTime, setOneQAtTime] = useState(true);
-  const [webcamRequired, setWebcamRequired] = useState(false);
-  const [lockQuestions, setLockQuestions] = useState(false);
-
-  const [dueDate, setDueDate] = useState("");
-  const [availableFrom, setAvailableFrom] = useState("");
-  const [availableUntil, setAvailableUntil] = useState("");
-
-  const onCreateQuizForCourse = async (quiz: any) => {
-    if (!cid) return;
-    const createdQuiz = await client.createQuizForCourse(cid as string, quiz);
-    dispatch(setQuizzes([...quizzes, createdQuiz]));
+  const fetchQuiz = async () => {
+    const quizzes = await client.findQuizzesForCourse(cid as string);
+    setQuiz(quizzes.find((q: any) => q._id === qid));
   };
 
-  const onUpdateAssignment = async (quiz: any) => {
-    await client.updateQuiz(cid as string, quiz);
-    const newQuizzes = quizzes.map((q: any) => (q._id === quiz._id ? quiz : q));
+  const onPublishQuiz = async (quiz: any) => {
+    const updatedQuiz = { ...quiz, published: !quiz.published };
+    await client.updateQuiz(cid as string, updatedQuiz);
+    const newQuizzes = quizzes.map((q: any) =>
+      q._id === updatedQuiz._id ? updatedQuiz : q
+    );
     dispatch(setQuizzes(newQuizzes));
+    setQuiz(updatedQuiz);
   };
 
   useEffect(() => {
-    if (!isNew && existing) {
-      setTitle(existing.title);
-      setDescription(existing.description);
-      setPublished(existing.published);
-      setPoints(existing.points);
-      setTimeLimit(existing.timeLimit);
-      setType(existing.type);
-      setAssignmentGroup(existing.assignmentGroup);
-      setShuffleAnswers(existing.shuffleAnswers);
-      setMultipleAttempts(existing.multipleAttempts);
-      setShowCorrectAnswers(existing.showCorrectAnswers);
-      setAccessCode(existing.accessCode);
-      setOneQAtTime(existing.oneQAtTime);
-      setWebcamRequired(existing.webcamRequired);
-      setLockQuestions(existing.lockQuestions);
-      setDueDate(existing.due_date ? existing.due_date.slice(0, 16) : "");
-      setAvailableFrom(
-        existing.available_date ? existing.available_date.slice(0, 16) : ""
-      );
-      setAvailableUntil(
-        existing.available_until ? existing.available_until.slice(0, 16) : ""
-      );
-    }
-  }, [isNew, existing]);
+    fetchQuiz();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
-  if (!currentUser?.role || currentUser.role !== "FACULTY") {
-    return <div>You are not authorized to view this page</div>;
-  }
-  if (!isNew && !existing) {
+  const handlePreview = () => {
+    redirect(`/Courses/${cid}/Quizzes/${qid}/preview`);
+  };
+
+  const handleEdit = () => {
+    redirect(`/Courses/${cid}/Quizzes/${qid}/edit`);
+  };
+
+  if (!quiz) {
     return <div>Quiz not found</div>;
   }
 
-  const handleSave = () => {
-    if (isNew) {
-      onCreateQuizForCourse({
-        title,
-        description,
-        published,
-        points,
-        time_limit: timeLimit,
-        type,
-        assignment_group: assignmentGroup,
-        shuffle_answers: shuffleAnswers,
-        multiple_attempts: multipleAttempts,
-        show_correct_answers: showCorrectAnswers,
-        access_code: accessCode,
-        one_q_at_time: oneQAtTime,
-        lock_questions: lockQuestions,
-        webcam_required: webcamRequired,
-        due_date: dueDate,
-        available_date: availableFrom,
-        available_until: availableUntil,
-      });
-    } else {
-      onUpdateAssignment({
-        ...existing,
-        title,
-        description,
-        published,
-        points,
-        time_limit: timeLimit,
-        type,
-        assignment_group: assignmentGroup,
-        shuffle_answers: shuffleAnswers,
-        multiple_attempts: multipleAttempts,
-        show_correct_answers: showCorrectAnswers,
-        access_code: accessCode,
-        one_q_at_time: oneQAtTime,
-        lock_questions: lockQuestions,
-        webcam_required: webcamRequired,
-        due_date: dueDate,
-        available_date: availableFrom,
-        available_until: availableUntil,
-      });
-    }
-    redirect(`/Courses/${cid}/Quizzes/${qid}`);
-  };
-
-  const handleSavePublish = () => {
-    setPublished(true);
-    if (isNew) {
-      onCreateQuizForCourse({
-        title,
-        description,
-        published,
-        points,
-        time_limit: timeLimit,
-        type,
-        assignment_group: assignmentGroup,
-        shuffle_answers: shuffleAnswers,
-        multiple_attempts: multipleAttempts,
-        show_correct_answers: showCorrectAnswers,
-        access_code: accessCode,
-        one_q_at_time: oneQAtTime,
-        lock_questions: lockQuestions,
-        webcam_required: webcamRequired,
-        due_date: dueDate,
-        available_date: availableFrom,
-        available_until: availableUntil,
-      });
-    } else {
-      onUpdateAssignment({
-        ...existing,
-        title,
-        description,
-        published,
-        points,
-        time_limit: timeLimit,
-        type,
-        assignment_group: assignmentGroup,
-        shuffle_answers: shuffleAnswers,
-        multiple_attempts: multipleAttempts,
-        show_correct_answers: showCorrectAnswers,
-        access_code: accessCode,
-        one_q_at_time: oneQAtTime,
-        lock_questions: lockQuestions,
-        webcam_required: webcamRequired,
-        due_date: dueDate,
-        available_date: availableFrom,
-        available_until: availableUntil,
-      });
-    }
-    redirect(`/Courses/${cid}/Quizzes`);
-  };
-
-  const handleCancel = () => {
-    redirect(`/Courses/${cid}/Quizzes`);
-  };
-
   return (
-    <div id="wd-quizzes-editor" className="d-flex flex-column gap-3">
-      <div>
-        <FormLabel>Quiz Title</FormLabel>
-        <FormControl value={title} onChange={(e) => setTitle(e.target.value)} />
-      </div>
-      <FormLabel>Quiz Instructions</FormLabel>
-      <FormControl
-        as="textarea"
-        rows={10}
-        value={description}
-        onChange={(e) => setDescription(e.target.value)}
-      />
-      <Row className="mb-3" controlId="points">
-        <FormLabel column sm={2}>
-          Points
-        </FormLabel>
-        <Col sm={10}>
-          <FormControl
-            type="number"
-            value={points}
-            onChange={(e) => setPoints(Number(e.target.value))}
-          />
+    <div>
+      <Row className="mb-3">
+        <Col sm={4}>
+          <h2 className="mb-3">{quiz.title}</h2>
+        </Col>
+        <Col sm={8}>
+          <div className="d-flex gap-2 justify-content-end">
+            <Button
+              variant={quiz.published ? "danger" : "primary"}
+              size="lg"
+              className="me-1"
+              id="wd-publish-btn"
+              onClick={() => onPublishQuiz(quiz)}
+            >
+              {quiz.published ? "Unpublish" : "Publish"}
+            </Button>
+            <Button
+              variant="secondary"
+              size="lg"
+              className="me-1"
+              id="wd-preview-btn"
+              onClick={handlePreview}
+            >
+              Preview
+            </Button>
+            <Button
+              variant="secondary"
+              size="lg"
+              className="me-1"
+              id="wd-edit-btn"
+              onClick={handleEdit}
+            >
+              Edit
+            </Button>
+          </div>
         </Col>
       </Row>
-      <Row className="mb-3" controlId="quiz-type">
-        <FormLabel column sm={2}>
+      <Row className="mb-3">
+        <Col sm={3} className="fw-bold text-end">
           Quiz Type
-        </FormLabel>
-        <Col sm={10}>
-          <FormSelect
-            value={type}
-            onChange={(e) => setType(e.target.value)}
-          >
-            <option value="GRADED_QUIZ">Graded Quiz</option>
-            <option value="PRACTICE_QUIZ">Practice Quiz</option>
-            <option value="GRADED_SURVEY">Graded Survey</option>
-            <option value="UNGRADED_SURVEY">Ungraded Survey</option>
-          </FormSelect>
+        </Col>
+        <Col sm={4}>
+          {QUIZ_TYPES.find((qt) => qt.value === quiz.type)?.label}
         </Col>
       </Row>
-      <Row className="mb-3" controlId="assignment-group">
-        <FormLabel column sm={2}>
+      <Row className="mb-3">
+        <Col sm={3} className="fw-bold text-end">
+          Points
+        </Col>
+        <Col sm={4}>{quiz.points}</Col>
+      </Row>
+      <Row className="mb-3">
+        <Col sm={3} className="fw-bold text-end">
           Assignment Group
-        </FormLabel>
-        <Col sm={10}>
-          <FormSelect
-            value={assignmentGroup}
-            onChange={(e) => setAssignmentGroup(e.target.value)}
-          >
-            <option value="ASSIGNMENTS">Assignments</option>
-            <option value="QUIZZES">Quizzes</option>
-            <option value="EXAMS">Exams</option>
-            <option value="PROJECT">Project</option>
-          </FormSelect>
+        </Col>
+        <Col sm={4}>{quiz.assignment_group}</Col>
+      </Row>
+      <Row className="mb-3">
+        <Col sm={3} className="fw-bold text-end">
+          Shuffle Answers
+        </Col>
+        <Col sm={4}>{quiz.shuffle_answers ? "Yes" : "No"}</Col>
+      </Row>
+      <Row className="mb-3">
+        <Col sm={3} className="fw-bold text-end">
+          Time Limit
+        </Col>
+        <Col sm={4}>{quiz.time_limit ? "Yes" : "No"}</Col>
+      </Row>
+      {quiz.time_limit && (
+        <Row className="mb-3">
+          <Col sm={3} className="fw-bold text-end">
+            Time Limit (minutes)
+          </Col>
+          <Col sm={4}>{quiz.time_limit_min}</Col>
+        </Row>
+      )}
+      <Row className="mb-3">
+        <Col sm={3} className="fw-bold text-end">
+          Multiple Attempts
+        </Col>
+        <Col sm={4}>{quiz.multiple_attempts ? "Yes" : "No"}</Col>
+      </Row>
+      {quiz.multiple_attempts && (
+        <Row className="mb-3">
+          <Col sm={3} className="fw-bold text-end">
+            Number of Attempts
+          </Col>
+          <Col sm={4}>{quiz.number_attempts}</Col>
+        </Row>
+      )}
+      <Row className="mb-3">
+        <Col sm={3} className="fw-bold text-end">
+          Show Correct Answers
+        </Col>
+        <Col sm={4}>
+          {
+            SHOW_CORRECT_ANSWERS.find(
+              (sca) => sca.value === quiz.show_correct_answers
+            )?.label
+          }
         </Col>
       </Row>
-      <Row className="mb-3" controlId="assign">
-        <FormLabel column sm={2}>
-          Assign
-        </FormLabel>
-        <Col sm={10} className="d-flex flex-column gap-3">
-          <div>
-            <FormLabel>Assign to</FormLabel>
-            <FormControl defaultValue="Everyone" />
-          </div>
-          <div>
-            <FormLabel>Due</FormLabel>
-            <FormControl
-              type="datetime-local"
-              value={dueDate}
-              onChange={(e) => setDueDate(e.target.value)}
-            />
-          </div>
-          <Row>
-            <Col sm={6}>
-              <FormLabel>Available from</FormLabel>
-              <FormControl
-                type="datetime-local"
-                value={availableFrom}
-                onChange={(e) => setAvailableFrom(e.target.value)}
-              />
-            </Col>
-            <Col sm={6}>
-              <FormLabel>Until</FormLabel>
-              <FormControl
-                type="datetime-local"
-                value={availableUntil}
-                onChange={(e) => setAvailableUntil(e.target.value)}
-              />
-            </Col>
-          </Row>
+      <Row className="mb-3">
+        <Col sm={3} className="fw-bold text-end">
+          Access Code
+        </Col>
+        <Col sm={4}>{quiz.access_code || "None"}</Col>
+      </Row>
+      <Row className="mb-3">
+        <Col sm={3} className="fw-bold text-end">
+          One Question at a Time
+        </Col>
+        <Col sm={4}>{quiz.one_q_at_time ? "Yes" : "No"}</Col>
+      </Row>
+      <Row className="mb-3">
+        <Col sm={3} className="fw-bold text-end">
+          Webcam Required
+        </Col>
+        <Col sm={4}>{quiz.webcam_required ? "Yes" : "No"}</Col>
+      </Row>
+      <Row className="mb-3">
+        <Col sm={3} className="fw-bold text-end">
+          Lock Questions After Answering
+        </Col>
+        <Col sm={4}>{quiz.lock_questions ? "Yes" : "No"}</Col>
+      </Row>
+      <Row className="mb-3">
+        <Col sm={3} className="fw-bold text-end">
+          Due
+        </Col>
+        <Col sm={4}>
+          {new Date(quiz.due_date).toLocaleString("default", {
+            month: "long",
+          })}{" "}
+          {new Date(quiz.due_date).getDate()} at{" "}
+          {new Date(quiz.due_date)
+            .toLocaleTimeString("en-US", {
+              hour: "numeric",
+              minute: "2-digit",
+              hour12: true,
+            })
+            .toLowerCase()}{" "}
         </Col>
       </Row>
-      <div className="d-flex gap-2 justify-content-end">
-        <Button
-          variant="secondary"
-          size="lg"
-          className="me-1"
-          id="wd-cancel-btn"
-          onClick={handleCancel}
-        >
-          Cancel
-        </Button>
-        <Button
-          variant="danger"
-          size="lg"
-          className="me-1"
-          id="wd-save-publish-btn"
-          onClick={handleSavePublish}
-        >
-          Save and Publish
-        </Button>
-        <Button
-          variant="danger"
-          size="lg"
-          className="me-1"
-          id="wd-save-btn"
-          onClick={handleSave}
-        >
-          Save
-        </Button>
-      </div>
+      <Row className="mb-3">
+        <Col sm={3} className="fw-bold text-end">
+          Available from
+        </Col>
+        <Col sm={4}>
+          {new Date(quiz.available_date).toLocaleString("default", {
+            month: "long",
+          })}{" "}
+          {new Date(quiz.available_date).getDate()} at{" "}
+          {new Date(quiz.available_date)
+            .toLocaleTimeString("en-US", {
+              hour: "numeric",
+              minute: "2-digit",
+              hour12: true,
+            })
+            .toLowerCase()}{" "}
+        </Col>
+      </Row>
+      <Row className="mb-3">
+        <Col sm={3} className="fw-bold text-end">
+          Until
+        </Col>
+        <Col sm={4}>
+          {new Date(quiz.available_until).toLocaleString("default", {
+            month: "long",
+          })}{" "}
+          {new Date(quiz.available_until).getDate()} at{" "}
+          {new Date(quiz.available_until)
+            .toLocaleTimeString("en-US", {
+              hour: "numeric",
+              minute: "2-digit",
+              hour12: true,
+            })
+            .toLowerCase()}{" "}
+        </Col>
+      </Row>
     </div>
   );
 }

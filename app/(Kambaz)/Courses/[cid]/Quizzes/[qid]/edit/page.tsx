@@ -32,7 +32,8 @@ export default function QuizEditor() {
   const [description, setDescription] = useState("");
   const [published, setPublished] = useState(false);
   const [points, setPoints] = useState(0);
-  const [timeLimit, setTimeLimit] = useState(20);
+  const [timeLimit, setTimeLimit] = useState(true);
+  const [timeLimitMin, setTimeLimitMin] = useState(20);
 
   const [type, setType] = useState("GRADED_QUIZ");
   const [assignmentGroup, setAssignmentGroup] = useState("QUIZZES");
@@ -52,6 +53,11 @@ export default function QuizEditor() {
 
   const [questions, setQuestions] = useState<any[]>([]);
 
+  const fetchQuizzes = async () => {
+    const quizzes = await client.findQuizzesForCourse(cid as string);
+    dispatch(setQuizzes(quizzes));
+  };
+
   const onCreateQuizForCourse = async (quiz: any) => {
     if (!cid) return;
     const createdQuiz = await client.createQuizForCourse(cid as string, quiz);
@@ -59,36 +65,44 @@ export default function QuizEditor() {
     return createdQuiz;
   };
 
-  const onUpdateAssignment = async (quiz: any) => {
+  const onUpdateQuiz = async (quiz: any) => {
     await client.updateQuiz(cid as string, quiz);
     const newQuizzes = quizzes.map((q: any) => (q._id === quiz._id ? quiz : q));
     dispatch(setQuizzes(newQuizzes));
   };
 
   useEffect(() => {
-    if (!isNew && existing) {
-      setTitle(existing.title);
-      setDescription(existing.description);
-      setPublished(existing.published);
-      setPoints(existing.points);
-      setTimeLimit(existing.timeLimit);
-      setType(existing.type);
-      setAssignmentGroup(existing.assignmentGroup);
-      setShuffleAnswers(existing.shuffleAnswers);
-      setMultipleAttempts(existing.multipleAttempts);
-      setShowCorrectAnswers(existing.showCorrectAnswers);
-      setAccessCode(existing.accessCode);
-      setOneQAtTime(existing.oneQAtTime);
-      setWebcamRequired(existing.webcamRequired);
-      setLockQuestions(existing.lockQuestions);
-      setDueDate(existing.due_date ? existing.due_date.slice(0, 16) : "");
-      setAvailableFrom(
-        existing.available_date ? existing.available_date.slice(0, 16) : ""
-      );
-      setAvailableUntil(
-        existing.available_until ? existing.available_until.slice(0, 16) : ""
-      );
+    if (!isNew) {
+      if (existing) {
+        setTitle(existing.title);
+        setDescription(existing.description);
+        setPublished(existing.published);
+        setPoints(existing.points);
+        setTimeLimit(existing.time_limit);
+        setTimeLimitMin(existing.time_limit_min || 20);
+        setType(existing.type);
+        setAssignmentGroup(existing.assignment_group);
+        setShuffleAnswers(existing.shuffle_answers);
+        setMultipleAttempts(existing.multiple_attempts);
+        setNumberAttempts(existing.number_attempts || 1);
+        setShowCorrectAnswers(existing.show_correct_answers);
+        setAccessCode(existing.access_code);
+        setOneQAtTime(existing.one_q_at_time);
+        setWebcamRequired(existing.webcam_required);
+        setLockQuestions(existing.lock_questions);
+        setDueDate(existing.due_date ? existing.due_date.slice(0, 16) : "");
+        setAvailableFrom(
+          existing.available_date ? existing.available_date.slice(0, 16) : ""
+        );
+        setAvailableUntil(
+          existing.available_until ? existing.available_until.slice(0, 16) : ""
+        );
+        setQuestions(existing.questions || []);
+      } else {
+        fetchQuizzes();
+      }
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isNew, existing]);
 
   if (!currentUser?.role || currentUser.role !== "FACULTY") {
@@ -98,13 +112,14 @@ export default function QuizEditor() {
     return <div>Quiz not found</div>;
   }
 
-  const buildQuizObject = (publish: boolean) => ({
+  const buildQuizObject = (publish?: boolean) => ({
     ...(isNew ? {} : existing),
     title,
     description,
-    published: publish,
+    published: publish === undefined ? published : publish,
     points,
     time_limit: timeLimit,
+    time_limit_min: timeLimitMin,
     type,
     assignment_group: assignmentGroup,
     shuffle_answers: shuffleAnswers,
@@ -121,18 +136,23 @@ export default function QuizEditor() {
     questions,
   });
 
-  const saveQuiz = async (publish: boolean) => {
+  const saveQuiz = async (publish?: boolean) => {
     const quizObj = buildQuizObject(publish);
+    let quiz_id = qid;
     if (isNew) {
       const createdQuiz = await onCreateQuizForCourse(quizObj);
-      redirect(`/Courses/${cid}/Quizzes/${createdQuiz._id}`);
+      quiz_id = createdQuiz._id;
     } else {
-      await onUpdateAssignment(quizObj);
-      redirect(`/Courses/${cid}/Quizzes/${qid}`);
+      await onUpdateQuiz(quizObj);
+    }
+    if (publish) {
+      redirect(`/Courses/${cid}/Quizzes`);
+    } else {
+      redirect(`/Courses/${cid}/Quizzes/${quiz_id}`);
     }
   };
 
-  const handleSave = () => saveQuiz(false);
+  const handleSave = () => saveQuiz();
   const handleSavePublish = () => saveQuiz(true);
   const handleCancel = () => {
     redirect(`/Courses/${cid}/Quizzes`);
@@ -202,21 +222,31 @@ export default function QuizEditor() {
               </FormSelect>
             </Col>
           </Row>
-          <Row className="mb-3" controlId="time-limit">
-            <FormLabel column sm={2}>
-              Time Limit (minutes)
-            </FormLabel>
-            <Col sm={10}>
-              <FormControl
-                type="number"
-                value={timeLimit}
-                min={1}
-                onChange={(e) => setTimeLimit(Number(e.target.value))}
-              />
-            </Col>
-          </Row>
           <Row className="mb-3">
             <Col sm={{ span: 10, offset: 2 }}>
+              <div className="form-check">
+                <input
+                  className="form-check-input"
+                  type="checkbox"
+                  checked={timeLimit}
+                  id="timeLimit"
+                  onChange={(e) => setTimeLimit(e.target.checked)}
+                />
+                <label className="form-check-label" htmlFor="timeLimit">
+                  Time Limit
+                </label>
+              </div>
+              {timeLimit && (
+                <div className="mt-2">
+                  <FormLabel>Time Limit (minutes)</FormLabel>
+                  <FormControl
+                    type="number"
+                    value={timeLimitMin}
+                    min={1}
+                    onChange={(e) => setTimeLimitMin(Number(e.target.value))}
+                  />
+                </div>
+              )}
               <div className="form-check">
                 <input
                   className="form-check-input"
