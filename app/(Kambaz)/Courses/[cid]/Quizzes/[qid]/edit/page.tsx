@@ -170,18 +170,6 @@ export default function QuizEditor() {
             value={description}
             onChange={(e) => setDescription(e.target.value)}
           />
-          <Row className="mb-3" controlId="points">
-            <FormLabel column sm={2}>
-              Points
-            </FormLabel>
-            <Col sm={10}>
-              <FormControl
-                type="number"
-                value={points}
-                onChange={(e) => setPoints(Number(e.target.value))}
-              />
-            </Col>
-          </Row>
           <Row className="mb-3" controlId="quiz-type">
             <FormLabel column sm={2}>
               Quiz Type
@@ -368,7 +356,11 @@ export default function QuizEditor() {
           </Row>
         </Tab>
         <Tab eventKey="questions" title="Questions">
-          <QuestionsTab questions={questions} setQuestions={setQuestions} setPoints={setPoints} />
+          <QuestionsTab
+            questions={questions}
+            setQuestions={setQuestions}
+            setPoints={setPoints}
+          />
         </Tab>
       </Tabs>
       <div className="d-flex gap-2 justify-content-end">
