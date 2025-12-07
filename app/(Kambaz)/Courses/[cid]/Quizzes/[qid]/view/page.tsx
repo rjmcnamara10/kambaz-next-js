@@ -46,6 +46,9 @@ export default function QuizViewer() {
   if (!quiz) {
     return <div>Quiz not found</div>;
   }
+  if (!quiz.questions || quiz.questions.length === 0) {
+    return <div>No questions available for this quiz</div>;
+  }
 
   const question = quiz.questions[currentQuestionIdx];
 
