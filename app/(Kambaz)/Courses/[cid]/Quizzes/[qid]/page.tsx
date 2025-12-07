@@ -24,8 +24,8 @@ const SHOW_CORRECT_ANSWERS = [
 export default function QuizDetails() {
   const { cid, qid } = useParams();
   const { quizzes } = useSelector((state: any) => state.quizzesReducer);
-  // const { currentUser } = useSelector((state: any) => state.accountReducer);
-  // const isFaculty = currentUser?.role === "FACULTY";
+  const { currentUser } = useSelector((state: any) => state.accountReducer);
+  const isFaculty = currentUser?.role === "FACULTY";
   const dispatch = useDispatch();
 
   const [quiz, setQuiz] = useState<any>(null);
@@ -50,8 +50,8 @@ export default function QuizDetails() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  const handlePreview = () => {
-    redirect(`/Courses/${cid}/Quizzes/${qid}/preview`);
+  const handleView = () => {
+    redirect(`/Courses/${cid}/Quizzes/${qid}/view`);
   };
 
   const handleEdit = () => {
@@ -62,188 +62,270 @@ export default function QuizDetails() {
     return <div>Quiz not found</div>;
   }
 
+  const now = new Date();
+  let submission = null;
+  let canTakeQuiz = false;
+  let noAttemptsMsg = "";
+  if (!isFaculty) {
+    submission = quiz.submissions?.[currentUser._id];
+
+    if (!submission) {
+      canTakeQuiz = true;
+    } else if (quiz.multiple_attempts) {
+      if (submission.attempt < quiz.number_attempts) {
+        canTakeQuiz = true;
+      } else {
+        noAttemptsMsg = "You have no attempts left for this quiz.";
+      }
+    } else {
+      noAttemptsMsg = "You have already taken this quiz.";
+    }
+  }
+
   return (
     <div>
       <Row className="mb-3">
-        <Col sm={4}>
+        <Col sm={6}>
           <h2 className="mb-3">{quiz.title}</h2>
         </Col>
-        <Col sm={8}>
-          <div className="d-flex gap-2 justify-content-end">
-            <Button
-              variant={quiz.published ? "danger" : "primary"}
-              size="lg"
-              className="me-1"
-              id="wd-publish-btn"
-              onClick={() => onPublishQuiz(quiz)}
-            >
-              {quiz.published ? "Unpublish" : "Publish"}
-            </Button>
-            <Button
-              variant="secondary"
-              size="lg"
-              className="me-1"
-              id="wd-preview-btn"
-              onClick={handlePreview}
-            >
-              Preview
-            </Button>
-            <Button
-              variant="secondary"
-              size="lg"
-              className="me-1"
-              id="wd-edit-btn"
-              onClick={handleEdit}
-            >
-              Edit
-            </Button>
-          </div>
+        <Col sm={6}>
+          {isFaculty ? (
+            <div className="d-flex gap-2 justify-content-end">
+              <Button
+                variant={quiz.published ? "danger" : "primary"}
+                size="lg"
+                className="me-1"
+                id="wd-publish-btn"
+                onClick={() => onPublishQuiz(quiz)}
+              >
+                {quiz.published ? "Unpublish" : "Publish"}
+              </Button>
+              <Button
+                variant="secondary"
+                size="lg"
+                className="me-1"
+                id="wd-view-btn"
+                onClick={handleView}
+              >
+                Preview
+              </Button>
+              <Button
+                variant="secondary"
+                size="lg"
+                className="me-1"
+                id="wd-edit-btn"
+                onClick={handleEdit}
+              >
+                Edit
+              </Button>
+            </div>
+          ) : (
+            <>
+              {now > new Date(quiz.available_until) && <>Quiz Closed</>}
+              {now < new Date(quiz.available_date) && (
+                <>
+                  Quiz not available until{" "}
+                  {new Date(quiz.available_date).toLocaleString("default", {
+                    month: "long",
+                  })}{" "}
+                  {new Date(quiz.available_date).getDate()} at{" "}
+                  {new Date(quiz.available_date)
+                    .toLocaleTimeString("en-US", {
+                      hour: "numeric",
+                      minute: "2-digit",
+                      hour12: true,
+                    })
+                    .toLowerCase()}
+                </>
+              )}
+              {now >= new Date(quiz.available_date) &&
+                now <= new Date(quiz.available_until) && (
+                  <>
+                    <div className="d-flex gap-2 justify-content-end">
+                      {submission && (
+                        <Button
+                          variant="info"
+                          size="lg"
+                          className="me-1"
+                          onClick={() =>
+                            redirect(
+                              `/Courses/${cid}/Quizzes/${qid}/view?results=1`
+                            )
+                          }
+                        >
+                          View Results
+                        </Button>
+                      )}
+                      {canTakeQuiz && (
+                        <Button
+                          variant="primary"
+                          size="lg"
+                          className="me-1"
+                          onClick={() =>
+                            redirect(`/Courses/${cid}/Quizzes/${qid}/view`)
+                          }
+                        >
+                          Take Quiz
+                        </Button>
+                      )}
+                    </div>
+                    {!canTakeQuiz && noAttemptsMsg && (
+                      <div className="text-danger mt-2">{noAttemptsMsg}</div>
+                    )}
+                  </>
+                )}
+            </>
+          )}
         </Col>
       </Row>
-      <Row className="mb-3">
-        <Col sm={3} className="fw-bold text-end">
-          Quiz Type
-        </Col>
-        <Col sm={4}>
-          {QUIZ_TYPES.find((qt) => qt.value === quiz.type)?.label}
-        </Col>
-      </Row>
-      <Row className="mb-3">
-        <Col sm={3} className="fw-bold text-end">
-          Points
-        </Col>
-        <Col sm={4}>{quiz.points}</Col>
-      </Row>
-      <Row className="mb-3">
-        <Col sm={3} className="fw-bold text-end">
-          Assignment Group
-        </Col>
-        <Col sm={4}>{quiz.assignment_group}</Col>
-      </Row>
-      <Row className="mb-3">
-        <Col sm={3} className="fw-bold text-end">
-          Shuffle Answers
-        </Col>
-        <Col sm={4}>{quiz.shuffle_answers ? "Yes" : "No"}</Col>
-      </Row>
-      <Row className="mb-3">
-        <Col sm={3} className="fw-bold text-end">
-          Time Limit
-        </Col>
-        <Col sm={4}>{quiz.time_limit ? "Yes" : "No"}</Col>
-      </Row>
-      {quiz.time_limit && (
-        <Row className="mb-3">
-          <Col sm={3} className="fw-bold text-end">
-            Time Limit (minutes)
-          </Col>
-          <Col sm={4}>{quiz.time_limit_min}</Col>
-        </Row>
+      {isFaculty && (
+        <>
+          <Row className="mb-3">
+            <Col sm={3} className="fw-bold text-end">
+              Quiz Type
+            </Col>
+            <Col sm={4}>
+              {QUIZ_TYPES.find((qt) => qt.value === quiz.type)?.label}
+            </Col>
+          </Row>
+          <Row className="mb-3">
+            <Col sm={3} className="fw-bold text-end">
+              Points
+            </Col>
+            <Col sm={4}>{quiz.points}</Col>
+          </Row>
+          <Row className="mb-3">
+            <Col sm={3} className="fw-bold text-end">
+              Assignment Group
+            </Col>
+            <Col sm={4}>{quiz.assignment_group}</Col>
+          </Row>
+          <Row className="mb-3">
+            <Col sm={3} className="fw-bold text-end">
+              Shuffle Answers
+            </Col>
+            <Col sm={4}>{quiz.shuffle_answers ? "Yes" : "No"}</Col>
+          </Row>
+          <Row className="mb-3">
+            <Col sm={3} className="fw-bold text-end">
+              Time Limit
+            </Col>
+            <Col sm={4}>{quiz.time_limit ? "Yes" : "No"}</Col>
+          </Row>
+          {quiz.time_limit && (
+            <Row className="mb-3">
+              <Col sm={3} className="fw-bold text-end">
+                Time Limit (minutes)
+              </Col>
+              <Col sm={4}>{quiz.time_limit_min}</Col>
+            </Row>
+          )}
+          <Row className="mb-3">
+            <Col sm={3} className="fw-bold text-end">
+              Multiple Attempts
+            </Col>
+            <Col sm={4}>{quiz.multiple_attempts ? "Yes" : "No"}</Col>
+          </Row>
+          {quiz.multiple_attempts && (
+            <Row className="mb-3">
+              <Col sm={3} className="fw-bold text-end">
+                Number of Attempts
+              </Col>
+              <Col sm={4}>{quiz.number_attempts}</Col>
+            </Row>
+          )}
+          <Row className="mb-3">
+            <Col sm={3} className="fw-bold text-end">
+              Show Correct Answers
+            </Col>
+            <Col sm={4}>
+              {
+                SHOW_CORRECT_ANSWERS.find(
+                  (sca) => sca.value === quiz.show_correct_answers
+                )?.label
+              }
+            </Col>
+          </Row>
+          <Row className="mb-3">
+            <Col sm={3} className="fw-bold text-end">
+              Access Code
+            </Col>
+            <Col sm={4}>{quiz.access_code || "None"}</Col>
+          </Row>
+          <Row className="mb-3">
+            <Col sm={3} className="fw-bold text-end">
+              One Question at a Time
+            </Col>
+            <Col sm={4}>{quiz.one_q_at_time ? "Yes" : "No"}</Col>
+          </Row>
+          <Row className="mb-3">
+            <Col sm={3} className="fw-bold text-end">
+              Webcam Required
+            </Col>
+            <Col sm={4}>{quiz.webcam_required ? "Yes" : "No"}</Col>
+          </Row>
+          <Row className="mb-3">
+            <Col sm={3} className="fw-bold text-end">
+              Lock Questions After Answering
+            </Col>
+            <Col sm={4}>{quiz.lock_questions ? "Yes" : "No"}</Col>
+          </Row>
+          <Row className="mb-3">
+            <Col sm={3} className="fw-bold text-end">
+              Due
+            </Col>
+            <Col sm={4}>
+              {new Date(quiz.due_date).toLocaleString("default", {
+                month: "long",
+              })}{" "}
+              {new Date(quiz.due_date).getDate()} at{" "}
+              {new Date(quiz.due_date)
+                .toLocaleTimeString("en-US", {
+                  hour: "numeric",
+                  minute: "2-digit",
+                  hour12: true,
+                })
+                .toLowerCase()}{" "}
+            </Col>
+          </Row>
+          <Row className="mb-3">
+            <Col sm={3} className="fw-bold text-end">
+              Available from
+            </Col>
+            <Col sm={4}>
+              {new Date(quiz.available_date).toLocaleString("default", {
+                month: "long",
+              })}{" "}
+              {new Date(quiz.available_date).getDate()} at{" "}
+              {new Date(quiz.available_date)
+                .toLocaleTimeString("en-US", {
+                  hour: "numeric",
+                  minute: "2-digit",
+                  hour12: true,
+                })
+                .toLowerCase()}{" "}
+            </Col>
+          </Row>
+          <Row className="mb-3">
+            <Col sm={3} className="fw-bold text-end">
+              Until
+            </Col>
+            <Col sm={4}>
+              {new Date(quiz.available_until).toLocaleString("default", {
+                month: "long",
+              })}{" "}
+              {new Date(quiz.available_until).getDate()} at{" "}
+              {new Date(quiz.available_until)
+                .toLocaleTimeString("en-US", {
+                  hour: "numeric",
+                  minute: "2-digit",
+                  hour12: true,
+                })
+                .toLowerCase()}{" "}
+            </Col>
+          </Row>
+        </>
       )}
-      <Row className="mb-3">
-        <Col sm={3} className="fw-bold text-end">
-          Multiple Attempts
-        </Col>
-        <Col sm={4}>{quiz.multiple_attempts ? "Yes" : "No"}</Col>
-      </Row>
-      {quiz.multiple_attempts && (
-        <Row className="mb-3">
-          <Col sm={3} className="fw-bold text-end">
-            Number of Attempts
-          </Col>
-          <Col sm={4}>{quiz.number_attempts}</Col>
-        </Row>
-      )}
-      <Row className="mb-3">
-        <Col sm={3} className="fw-bold text-end">
-          Show Correct Answers
-        </Col>
-        <Col sm={4}>
-          {
-            SHOW_CORRECT_ANSWERS.find(
-              (sca) => sca.value === quiz.show_correct_answers
-            )?.label
-          }
-        </Col>
-      </Row>
-      <Row className="mb-3">
-        <Col sm={3} className="fw-bold text-end">
-          Access Code
-        </Col>
-        <Col sm={4}>{quiz.access_code || "None"}</Col>
-      </Row>
-      <Row className="mb-3">
-        <Col sm={3} className="fw-bold text-end">
-          One Question at a Time
-        </Col>
-        <Col sm={4}>{quiz.one_q_at_time ? "Yes" : "No"}</Col>
-      </Row>
-      <Row className="mb-3">
-        <Col sm={3} className="fw-bold text-end">
-          Webcam Required
-        </Col>
-        <Col sm={4}>{quiz.webcam_required ? "Yes" : "No"}</Col>
-      </Row>
-      <Row className="mb-3">
-        <Col sm={3} className="fw-bold text-end">
-          Lock Questions After Answering
-        </Col>
-        <Col sm={4}>{quiz.lock_questions ? "Yes" : "No"}</Col>
-      </Row>
-      <Row className="mb-3">
-        <Col sm={3} className="fw-bold text-end">
-          Due
-        </Col>
-        <Col sm={4}>
-          {new Date(quiz.due_date).toLocaleString("default", {
-            month: "long",
-          })}{" "}
-          {new Date(quiz.due_date).getDate()} at{" "}
-          {new Date(quiz.due_date)
-            .toLocaleTimeString("en-US", {
-              hour: "numeric",
-              minute: "2-digit",
-              hour12: true,
-            })
-            .toLowerCase()}{" "}
-        </Col>
-      </Row>
-      <Row className="mb-3">
-        <Col sm={3} className="fw-bold text-end">
-          Available from
-        </Col>
-        <Col sm={4}>
-          {new Date(quiz.available_date).toLocaleString("default", {
-            month: "long",
-          })}{" "}
-          {new Date(quiz.available_date).getDate()} at{" "}
-          {new Date(quiz.available_date)
-            .toLocaleTimeString("en-US", {
-              hour: "numeric",
-              minute: "2-digit",
-              hour12: true,
-            })
-            .toLowerCase()}{" "}
-        </Col>
-      </Row>
-      <Row className="mb-3">
-        <Col sm={3} className="fw-bold text-end">
-          Until
-        </Col>
-        <Col sm={4}>
-          {new Date(quiz.available_until).toLocaleString("default", {
-            month: "long",
-          })}{" "}
-          {new Date(quiz.available_until).getDate()} at{" "}
-          {new Date(quiz.available_until)
-            .toLocaleTimeString("en-US", {
-              hour: "numeric",
-              minute: "2-digit",
-              hour12: true,
-            })
-            .toLowerCase()}{" "}
-        </Col>
-      </Row>
     </div>
   );
 }

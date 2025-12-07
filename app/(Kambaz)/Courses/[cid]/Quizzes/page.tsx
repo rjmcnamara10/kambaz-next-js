@@ -70,25 +70,28 @@ export default function Quizzes() {
         <ListGroupItem className="wd-group p-0 mb-5 fs-5 border-gray">
           <div className="wd-title p-3 ps-2 bg-secondary">Quizzes</div>
           <ListGroup className="wd-quizzes rounded-0">
-            {sortedQuizzes.length === 0 ? (
+            {isFaculty && sortedQuizzes.length === 0 ? (
               <div className="text-center py-4">
                 Click <span className="fw-bold">+ Quiz</span> to create a quiz.
               </div>
             ) : (
-              sortedQuizzes.map((quiz: any) => (
-                <QuizListItem
-                  key={quiz._id}
-                  quiz={quiz}
-                  cid={cid as string}
-                  isFaculty={isFaculty}
-                  onDelete={(quizId) => {
-                    onRemoveQuiz(quizId);
-                  }}
-                  onPublish={(publish) => {
-                    onUpdateQuiz({ ...quiz, published: publish });
-                  }}
-                />
-              ))
+              sortedQuizzes
+                .filter((quiz) => isFaculty || quiz.published)
+                .map((quiz: any) => (
+                  <QuizListItem
+                    key={quiz._id}
+                    quiz={quiz}
+                    cid={cid as string}
+                    userId={currentUser._id}
+                    isFaculty={isFaculty}
+                    onDelete={(quizId) => {
+                      onRemoveQuiz(quizId);
+                    }}
+                    onPublish={(publish) => {
+                      onUpdateQuiz({ ...quiz, published: publish });
+                    }}
+                  />
+                ))
             )}
           </ListGroup>
         </ListGroupItem>

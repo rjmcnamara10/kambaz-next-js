@@ -7,35 +7,32 @@ import QuizMenu from "./QuizMenu";
 export default function QuizListItem({
   quiz,
   cid,
+  userId,
   isFaculty,
   onDelete,
   onPublish,
 }: {
   quiz: any;
   cid: string;
+  userId: string;
   isFaculty: boolean;
   onDelete: (quizId: string) => void;
   onPublish: (publish: boolean) => void;
 }) {
   const now = new Date();
+  const submissionScore = quiz.submissions?.[userId]?.score;
 
   return (
     <ListGroupItem className="wd-quiz p-3 ps-1 d-flex justify-content-between align-items-center">
       <div className="d-flex align-items-center">
         <BsGripVertical className="me-2 fs-3" />
         <div className="wd-quiz-info">
-          {isFaculty ? (
-            <Link
-              href={`/Courses/${cid}/Quizzes/${quiz._id}`}
-              className="wd-quiz-link text-black text-decoration-none fw-bold"
-            >
-              {quiz.title || "Untitled Quiz"}
-            </Link>
-          ) : (
-            <span className="text-black fw-bold">
-              {quiz.title || "Untitled Quiz"}
-            </span>
-          )}
+          <Link
+            href={`/Courses/${cid}/Quizzes/${quiz._id}`}
+            className="wd-quiz-link text-black text-decoration-none fw-bold"
+          >
+            {quiz.title || "Untitled Quiz"}
+          </Link>
           <p className="mb-0">
             {now > new Date(quiz.available_until) && <>Closed </>}
             {now >= new Date(quiz.available_date) &&
@@ -69,6 +66,11 @@ export default function QuizListItem({
               })
               .toLowerCase()}{" "}
             | {quiz.points} pts | {quiz.questions.length} Questions
+            {!isFaculty && submissionScore !== undefined && (
+              <>
+                {" "}| <b>Score:</b> {submissionScore} / {quiz.points}
+              </>
+            )}
           </p>
         </div>
       </div>
