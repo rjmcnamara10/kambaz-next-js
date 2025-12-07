@@ -52,7 +52,7 @@ export default function TOC() {
         </NavLink>
       </NavItem>
       <NavItem>
-        <NavLink href="https://kambaz-node-server-app-vkm8.onrender.com">
+        <NavLink href="https://kambaz-node-server-app-a6-oynn.onrender.com">
           Render Server URL
         </NavLink>
       </NavItem>
